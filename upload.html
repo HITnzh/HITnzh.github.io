@@ -1,0 +1,56 @@
+@"
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上传内容</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">我的博客</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="about.html">关于</a></li>
+                    <li><a href="upload.html">上传</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="upload-form">
+            <h2>上传内容</h2>
+            <form id="uploadForm">
+                <label for="title">标题：</label>
+                <input type="text" id="title" name="title" required>
+
+                <label for="content">内容：</label>
+                <textarea id="content" name="content" rows="10" required></textarea>
+
+                <label for="image">上传图片：</label>
+                <input type="file" id="image" name="image" accept="image/*">
+
+                <button type="submit">提交</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 我的个人博客</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            alert('内容已提交！');
+        });
+    </script>
+</body>
+</html>
+"@ | Set-Content -Path .\upload.html
