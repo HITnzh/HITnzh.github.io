@@ -4,51 +4,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>上传内容</title>
+    <title>上传图片 - ImageWall</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1 class="logo">我的博客</h1>
-            <nav>
-                <ul>
-                    <li><a href="index.html">首页</a></li>
-                    <li><a href="about.html">关于</a></li>
-                    <li><a href="upload.html">上传</a></li>
-                </ul>
-            </nav>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-btn"><i class="fas fa-bars"></i></button>
+            <div class="nav-brand">ImageWall</div>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-clock"></i> 最新</a>
+                <a href="#"><i class="fas fa-fire"></i> 热门</a>
+                <a href="#"><i class="fas fa-th-large"></i> 分类</a>
+                <a href="#"><i class="fas fa-bookmark"></i> 收藏</a>
+            </div>
         </div>
-    </header>
+        <div class="nav-center">
+            <div class="search-container">
+                <input type="text" placeholder="搜索图片...">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+                <div class="search-suggestions"></div>
+            </div>
+        </div>
+        <div class="nav-right">
+            <button class="upload-btn active"><i class="fas fa-upload"></i> 上传</button>
+            <div class="user-menu">
+                <img src="img/avatar.jpg" alt="用户头像" class="avatar">
+                <div class="dropdown-menu">
+                    <a href="#"><i class="fas fa-user"></i> 个人主页</a>
+                    <a href="#"><i class="fas fa-cog"></i> 设置</a>
+                    <a href="#"><i class="fas fa-sign-out-alt"></i> 退出</a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-    <main class="container">
-        <section class="upload-form">
-            <h2>上传内容</h2>
+    <!-- 上传表单 -->
+    <main class="upload-container">
+        <div class="upload-card">
+            <h2><i class="fas fa-cloud-upload-alt"></i> 上传图片</h2>
+            
+            <div class="upload-area" id="dropArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>拖放图片到这里或点击选择文件</p>
+                <input type="file" id="fileInput" accept="image/*" multiple>
+                <div class="preview-container" id="previewContainer"></div>
+            </div>
+            
             <form id="uploadForm">
-                <label for="title">标题：</label>
-                <input type="text" id="title" name="title" required>
-
-                <label for="content">内容：</label>
-                <textarea id="content" name="content" rows="10" required></textarea>
-
-                <label for="image">上传图片：</label>
-                <input type="file" id="image" name="image" accept="image/*">
-
-                <button type="submit">提交</button>
+                <div class="form-group">
+                    <label for="imageTitle"><i class="fas fa-heading"></i> 图片标题</label>
+                    <input type="text" id="imageTitle" placeholder="给你的图片起个标题" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="imageDescription"><i class="fas fa-align-left"></i> 图片描述</label>
+                    <textarea id="imageDescription" placeholder="添加一些描述..." rows="3"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="imageCategory"><i class="fas fa-folder"></i> 分类</label>
+                        <select id="imageCategory" required>
+                            <option value="">选择分类</option>
+                            <option value="nature">自然风景</option>
+                            <option value="urban">城市建筑</option>
+                            <option value="abstract">抽象艺术</option>
+                            <option value="people">人物肖像</option>
+                            <option value="animals">动物世界</option>
+                            <option value="other">其他</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="imageLicense"><i class="fas fa-copyright"></i> 许可协议</label>
+                        <select id="imageLicense">
+                            <option value="standard">标准许可</option>
+                            <option value="cc0">CC0 公共领域</option>
+                            <option value="ccby">CC BY 署名</option>
+                            <option value="ccbysa">CC BY-SA 署名-相同方式共享</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="imageTags"><i class="fas fa-tags"></i> 标签</label>
+                    <input type="text" id="imageTags" placeholder="添加标签，用逗号分隔">
+                    <div class="tags-suggestions">
+                        <span class="tag-pill">风景</span>
+                        <span class="tag-pill">自然</span>
+                        <span class="tag-pill">城市</span>
+                        <span class="tag-pill">建筑</span>
+                        <span class="tag-pill">艺术</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="termsAgreement" required>
+                        <span>我同意<a href="#">服务条款</a>和<a href="#">隐私政策</a></span>
+                    </label>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="window.location.href='index.html'">取消</button>
+                    <button type="submit" class="btn-primary"><i class="fas fa-cloud-upload-alt"></i> 上传图片</button>
+                </div>
             </form>
-        </section>
+        </div>
     </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2023 我的个人博客</p>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <div class="nav-brand">ImageWall</div>
+                <p>高质量图片分享平台</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-section">
+                    <h3>关于我们</h3>
+                    <ul>
+                        <li><a href="#">关于ImageWall</a></li>
+                        <li><a href="#">联系我们</a></li>
+                        <li><a href="#">加入我们</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>法律信息</h3>
+                    <ul>
+                        <li><a href="#">服务条款</a></li>
+                        <li><a href="#">隐私政策</a></li>
+                        <li><a href="#">版权说明</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>社交媒体</h3>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-weibo"></i></a>
+                        <a href="#"><i class="fab fa-weixin"></i></a>
+                        <a href="#"><i class="fab fa-qq"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 ImageWall. 保留所有权利。</p>
         </div>
     </footer>
 
     <script>
-        document.getElementById('uploadForm').addEventListener('submit', function (e) {
+        // 拖放上传功能
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('previewContainer');
+        
+        dropArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        dropArea.addEventListener('dragover', (e) => {
             e.preventDefault();
-            alert('内容已提交！');
+            dropArea.classList.add('active');
+        });
+        
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('active');
+        });
+        
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('active');
+            
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                showPreview(e.dataTransfer.files);
+            }
+        });
+        
+        fileInput.addEventListener('change', () => {
+            showPreview(fileInput.files);
+        });
+        
+        function showPreview(files) {
+            previewContainer.innerHTML = '';
+            
+            if (files.length > 0) {
+                dropArea.classList.add('has-files');
+                
+                for (let i = 0; i < files.length; i++) {
+                    if (files[i].type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        
+                        reader.onload = function(e) {
+                            const preview = document.createElement('div');
+                            preview.className = 'image-preview';
+                            preview.innerHTML = `
+                                <img src="${e.target.result}" alt="预览图片">
+                                <span class="remove-preview" data-index="${i}">×</span>
+                            `;
+                            previewContainer.appendChild(preview);
+                            
+                            // 添加删除预览的事件
+                            preview.querySelector('.remove-preview').addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                preview.remove();
+                                if (previewContainer.children.length === 0) {
+                                    dropArea.classList.remove('has-files');
+                                }
+                            });
+                        };
+                        
+                        reader.readAsDataURL(files[i]);
+                    }
+                }
+            } else {
+                dropArea.classList.remove('has-files');
+            }
+        }
+        
+        // 标签建议功能
+        const tagPills = document.querySelectorAll('.tag-pill');
+        const tagsInput = document.getElementById('imageTags');
+        
+        tagPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                const tagText = pill.textContent;
+                const currentTags = tagsInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+                
+                if (!currentTags.includes(tagText)) {
+                    if (currentTags.length > 0 && currentTags[0] !== '') {
+                        tagsInput.value = currentTags.join(', ') + ', ' + tagText;
+                    } else {
+                        tagsInput.value = tagText;
+                    }
+                }
+            });
+        });
+        
+        // 表单提交
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 模拟上传过程
+            const submitBtn = this.querySelector('.btn-primary');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 上传中...';
+            
+            setTimeout(() => {
+                // 显示成功消息
+                const message = document.createElement('div');
+                message.className = 'message success';
+                message.textContent = '图片上传成功！';
+                document.body.appendChild(message);
+                
+                setTimeout(() => {
+                    message.classList.add('show');
+                }, 10);
+                
+                setTimeout(() => {
+                    message.classList.remove('show');
+                    setTimeout(() => {
+                        document.body.removeChild(message);
+                        window.location.href = 'index.html';
+                    }, 300);
+                }, 3000);
+                
+                // 恢复按钮状态
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }, 2000);
         });
     </script>
 </body>
