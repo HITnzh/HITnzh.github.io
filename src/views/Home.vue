@@ -1,17 +1,26 @@
 <script setup>
 import { ArrowUpRight, BookOpen, Folder, Sparkles } from 'lucide-vue-next'
+import { computed, onMounted, ref } from 'vue'
 import PostCard from '../components/PostCard.vue'
-import { posts } from '../data/posts'
-import { projects } from '../data/projects'
+import { getProjects, getPublishedPosts } from '../services/contentService'
 
-const featuredPosts = posts.filter((post) => post.featured).slice(0, 3)
-const latestPosts = posts.slice(0, 4)
-const topicCards = [
-  { name: '技术', description: '前端、工程化、部署和工具链', count: posts.filter((post) => ['技术', '前端', '工程'].includes(post.category)).length },
-  { name: '研究', description: '信号处理、实验记录和论文笔记', count: posts.filter((post) => post.category === '研究').length },
-  { name: '项目', description: '作品复盘、设计取舍和迭代记录', count: posts.filter((post) => post.category === '项目').length },
-  { name: '生活', description: '阅读、日常和一些安静的瞬间', count: posts.filter((post) => post.category === '生活').length },
-]
+const posts = ref([])
+const projects = ref([])
+
+const featuredPosts = computed(() => posts.value.filter((post) => post.featured).slice(0, 3))
+const latestPosts = computed(() => posts.value.slice(0, 4))
+const topicCards = computed(() => [
+  { name: '技术', description: '前端、工程化、部署和工具链', count: posts.value.filter((post) => ['技术', '前端', '工程'].includes(post.category)).length },
+  { name: '研究', description: '信号处理、实验记录和论文笔记', count: posts.value.filter((post) => post.category === '研究').length },
+  { name: '项目', description: '作品复盘、设计取舍和迭代记录', count: posts.value.filter((post) => post.category === '项目').length },
+  { name: '生活', description: '阅读、日常和一些安静的瞬间', count: posts.value.filter((post) => post.category === '生活').length },
+])
+
+onMounted(async () => {
+  const [postData, projectData] = await Promise.all([getPublishedPosts(), getProjects()])
+  posts.value = postData
+  projects.value = projectData
+})
 </script>
 
 <template>

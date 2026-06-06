@@ -1,14 +1,22 @@
 <script setup>
-import { computed } from 'vue'
-import { posts } from '../data/posts'
+import { computed, onMounted, ref } from 'vue'
+import { getPublishedPosts } from '../services/contentService'
+
+const posts = ref([])
+const loading = ref(true)
 
 const groups = computed(() => {
-  return posts.reduce((result, post) => {
+  return posts.value.reduce((result, post) => {
     const year = post.date.slice(0, 4)
     if (!result[year]) result[year] = []
     result[year].push(post)
     return result
   }, {})
+})
+
+onMounted(async () => {
+  posts.value = await getPublishedPosts()
+  loading.value = false
 })
 </script>
 
@@ -20,7 +28,14 @@ const groups = computed(() => {
       <p>按时间把内容慢慢排成一条线。</p>
     </section>
 
-    <section class="section-wrap archive-list">
+    <section v-if="loading" class="section-wrap">
+      <div class="empty-state">
+        <h2>正在加载归档</h2>
+        <p>稍等一下，内容正在回来。</p>
+      </div>
+    </section>
+
+    <section v-else class="section-wrap archive-list">
       <div v-for="(items, year) in groups" :key="year" class="archive-year">
         <h2>{{ year }}</h2>
         <div class="archive-items">

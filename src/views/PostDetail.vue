@@ -1,19 +1,39 @@
 <script setup>
 import { CalendarDays, Clock3, Tag } from 'lucide-vue-next'
-import { computed } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { posts } from '../data/posts'
+import { getPostBySlug, getPublishedPosts } from '../services/contentService'
 
 const route = useRoute()
-const post = computed(() => posts.find((item) => item.slug === route.params.slug))
-const postIndex = computed(() => posts.findIndex((item) => item.slug === route.params.slug))
-const previousPost = computed(() => (postIndex.value > 0 ? posts[postIndex.value - 1] : null))
-const nextPost = computed(() => (postIndex.value >= 0 && postIndex.value < posts.length - 1 ? posts[postIndex.value + 1] : null))
+const posts = ref([])
+const post = ref(null)
+const loading = ref(true)
+const postIndex = computed(() => posts.value.findIndex((item) => item.slug === route.params.slug))
+const previousPost = computed(() => (postIndex.value > 0 ? posts.value[postIndex.value - 1] : null))
+const nextPost = computed(() => (postIndex.value >= 0 && postIndex.value < posts.value.length - 1 ? posts.value[postIndex.value + 1] : null))
 const toc = computed(() => post.value?.content.filter((block) => block.heading).map((block) => block.heading) ?? [])
+
+async function loadPost(slug) {
+  loading.value = true
+  const [postData, postList] = await Promise.all([getPostBySlug(slug), getPublishedPosts()])
+  post.value = postData
+  posts.value = postList
+  loading.value = false
+}
+
+onMounted(() => loadPost(route.params.slug))
+watch(() => route.params.slug, (slug) => loadPost(slug))
 </script>
 
 <template>
-  <main v-if="post" class="article-page">
+  <main v-if="loading" class="page-shell">
+    <section class="empty-state">
+      <h1>正在加载文章</h1>
+      <p>稍等一下，内容正在回来。</p>
+    </section>
+  </main>
+
+  <main v-else-if="post" class="article-page">
     <article>
       <header class="article-header">
         <img :src="post.cover" :alt="post.title" />

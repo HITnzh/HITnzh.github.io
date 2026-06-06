@@ -771,6 +771,217 @@ button {
   padding-left: 20px;
 }
 
+.admin-shell .section-wrap {
+  padding-top: 28px;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.admin-action-card,
+.setup-panel,
+.admin-form,
+.admin-editor,
+.admin-table {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.06);
+}
+
+.admin-action-card {
+  display: grid;
+  gap: 10px;
+  padding: 22px;
+}
+
+.admin-action-card svg {
+  color: var(--green);
+}
+
+.admin-action-card strong {
+  font-size: 22px;
+}
+
+.admin-action-card span,
+.form-note,
+.form-error {
+  color: var(--muted);
+}
+
+.setup-panel {
+  padding: clamp(22px, 4vw, 34px);
+}
+
+.setup-panel h2 {
+  margin: 0 0 10px;
+}
+
+.setup-panel p {
+  color: var(--muted);
+}
+
+.setup-panel pre {
+  overflow-x: auto;
+  margin: 18px 0 0;
+  border-radius: 8px;
+  background: #111827;
+  color: #e6edf3;
+  padding: 18px;
+}
+
+.admin-form-wrap {
+  max-width: 520px;
+}
+
+.admin-form,
+.admin-editor {
+  padding: 22px;
+}
+
+.admin-form,
+.editor-grid,
+.editor-sidebar {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-form label,
+.admin-editor label {
+  display: grid;
+  gap: 8px;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.admin-form input,
+.admin-editor input,
+.admin-editor textarea,
+.admin-editor select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  padding: 11px 12px;
+  color: var(--ink);
+  outline: 0;
+}
+
+.admin-form input:focus,
+.admin-editor input:focus,
+.admin-editor textarea:focus,
+.admin-editor select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(47, 118, 109, 0.16);
+}
+
+.form-error {
+  color: var(--coral);
+  font-weight: 700;
+}
+
+.admin-title-row {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.admin-title-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.secondary-admin-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 10px 16px;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.admin-table {
+  overflow: hidden;
+}
+
+.admin-row {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) 120px auto;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-row:last-child {
+  border-bottom: 0;
+}
+
+.admin-row span {
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-row time {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.admin-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 22px;
+  align-items: start;
+}
+
+.body-editor {
+  resize: vertical;
+  min-height: 360px;
+}
+
+.check-row {
+  display: flex !important;
+  grid-template-columns: none;
+  align-items: center;
+  gap: 10px !important;
+}
+
+.check-row input {
+  width: auto;
+}
+
+.upload-control {
+  position: relative;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px !important;
+  min-height: 44px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--green) !important;
+  cursor: pointer;
+}
+
+.upload-control input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
 .site-footer {
   display: flex;
   align-items: center;
@@ -854,6 +1065,7 @@ button {
   .featured-grid,
   .post-grid,
   .project-grid,
+  .admin-grid,
   .about-grid,
   .two-column,
   .split-list,
@@ -868,6 +1080,15 @@ button {
   }
 
   .filter-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-title-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-editor {
     grid-template-columns: 1fr;
   }
 
@@ -920,6 +1141,7 @@ button {
   }
 
   .project-row,
+  .admin-row,
   .archive-year,
   .archive-items a {
     grid-template-columns: 1fr;

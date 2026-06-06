@@ -1,6 +1,15 @@
 <script setup>
 import { ArrowUpRight } from 'lucide-vue-next'
-import { projects } from '../data/projects'
+import { onMounted, ref } from 'vue'
+import { getProjects } from '../services/contentService'
+
+const projects = ref([])
+const loading = ref(true)
+
+onMounted(async () => {
+  projects.value = await getProjects()
+  loading.value = false
+})
 </script>
 
 <template>
@@ -11,7 +20,14 @@ import { projects } from '../data/projects'
       <p>把正在做、已经完成、值得复盘的东西放在这里。</p>
     </section>
 
-    <section class="section-wrap project-grid">
+    <section v-if="loading" class="section-wrap">
+      <div class="empty-state">
+        <h2>正在加载项目</h2>
+        <p>稍等一下，内容正在回来。</p>
+      </div>
+    </section>
+
+    <section v-else class="section-wrap project-grid">
       <article v-for="project in projects" :key="project.name" class="project-card">
         <div>
           <span>{{ project.status }}</span>

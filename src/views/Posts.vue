@@ -1,14 +1,17 @@
 <script setup>
 import { Search } from 'lucide-vue-next'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import PostCard from '../components/PostCard.vue'
-import { categories, posts } from '../data/posts'
+import { getCategories, getPublishedPosts } from '../services/contentService'
 
 const route = useRoute()
 const router = useRouter()
 const selectedCategory = ref('全部')
 const searchText = ref('')
+const posts = ref([])
+const categories = ref(['全部'])
+const loading = ref(true)
 
 watch(
   () => route.query,
@@ -21,13 +24,19 @@ watch(
 
 const filteredPosts = computed(() => {
   const q = searchText.value.trim().toLowerCase()
-  return posts.filter((post) => {
+  return posts.value.filter((post) => {
     const categoryMatch = selectedCategory.value === '全部' || post.category === selectedCategory.value
     const searchMatch =
       !q ||
       [post.title, post.excerpt, post.category, ...post.tags].some((item) => item.toLowerCase().includes(q))
     return categoryMatch && searchMatch
   })
+})
+
+onMounted(async () => {
+  posts.value = await getPublishedPosts()
+  categories.value = await getCategories(posts.value)
+  loading.value = false
 })
 
 function selectCategory(category) {
@@ -79,7 +88,11 @@ function submitSearch() {
         </div>
       </div>
 
-      <div v-if="filteredPosts.length" class="post-grid">
+      <div v-if="loading" class="empty-state">
+        <h2>正在加载文章</h2>
+        <p>稍等一下，内容正在回来。</p>
+      </div>
+      <div v-else-if="filteredPosts.length" class="post-grid">
         <PostCard v-for="post in filteredPosts" :key="post.slug" :post="post" />
       </div>
       <div v-else class="empty-state">
