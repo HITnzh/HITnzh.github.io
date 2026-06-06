@@ -1,35 +1,45 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import About from '../views/About.vue'
+import Archive from '../views/Archive.vue'
+import Home from '../views/Home.vue'
+import PostDetail from '../views/PostDetail.vue'
+import Posts from '../views/Posts.vue'
+import Projects from '../views/Projects.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: () => import('../views/Home.vue'),
+    component: Home,
   },
   {
     path: '/posts',
     name: 'posts',
-    component: () => import('../views/Posts.vue'),
+    component: Posts,
   },
   {
     path: '/posts/:slug',
     name: 'post-detail',
-    component: () => import('../views/PostDetail.vue'),
+    component: PostDetail,
   },
   {
     path: '/archive',
     name: 'archive',
-    component: () => import('../views/Archive.vue'),
+    component: Archive,
   },
   {
     path: '/projects',
     name: 'projects',
-    component: () => import('../views/Projects.vue'),
+    component: Projects,
   },
   {
     path: '/about',
     name: 'about',
-    component: () => import('../views/About.vue'),
+    component: About,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/',
   },
 ]
 
