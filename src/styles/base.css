@@ -2,18 +2,19 @@
   color-scheme: light;
   font-family:
     Inter, "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, -apple-system, sans-serif;
-  --font-display: "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, Georgia, serif;
-  --bg: #f8f7ef;
-  --paper: #fffdf7;
-  --paper-strong: #f1f6ec;
+  --font-display: Georgia, "Times New Roman", "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
+  --font-body: "Noto Serif SC", Georgia, "Times New Roman", "Songti SC", serif;
+  --bg: #fbf8ef;
+  --paper: #fffdf6;
+  --paper-strong: #f7f1df;
   --ink: #1f241c;
   --ink-soft: #394035;
-  --muted: #6d7467;
-  --line: #d8d2bd;
-  --moss: #416b4f;
-  --leaf: #e6efe0;
-  --clay: #a8553d;
-  --blue: #536f91;
+  --muted: #6f7169;
+  --line: #e0d6bd;
+  --moss: #3f6f5b;
+  --leaf: #edf4e4;
+  --clay: #9d3f31;
+  --blue: #4d7291;
   --plum: #705a76;
   --gold: #bf8f2f;
   --shadow: 0 18px 44px rgba(58, 47, 26, 0.12);
@@ -32,11 +33,7 @@ body {
   margin: 0;
   min-width: 320px;
   overflow-x: hidden;
-  background:
-    linear-gradient(90deg, rgba(65, 107, 79, 0.06) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(83, 111, 145, 0.04) 1px, transparent 1px),
-    var(--bg);
-  background-size: 44px 44px;
+  background: var(--bg);
   color: var(--ink);
   line-height: 1.72;
 }
@@ -166,6 +163,309 @@ button {
   min-height: 70vh;
 }
 
+.appleton-hero {
+  width: min(1420px, calc(100% - 56px));
+  margin: 0 auto;
+  padding: 74px 0 36px;
+}
+
+.appleton-hero h1 {
+  max-width: 1080px;
+  margin: 18px 0 0;
+  font-family: var(--font-display);
+  font-size: 74px;
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+
+.appleton-hero > p {
+  display: grid;
+  gap: 4px;
+  max-width: 780px;
+  margin: 24px 0 0;
+  color: var(--ink-soft);
+  font-size: 21px;
+  font-weight: 300;
+  line-height: 1.72;
+}
+
+.garden-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 34px;
+}
+
+.garden-stats a {
+  display: grid;
+  min-width: 172px;
+  border-left: 2px solid var(--line);
+  padding: 4px 18px 6px 14px;
+}
+
+.garden-stats a:hover {
+  border-color: var(--clay);
+}
+
+.garden-stats strong {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.garden-stats span {
+  color: var(--moss);
+  font-weight: 750;
+}
+
+.garden-stats em {
+  color: var(--muted);
+  font-size: 13px;
+  font-style: normal;
+}
+
+.appleton-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas:
+    "essays essays notes"
+    "patterns library library";
+  gap: 48px 44px;
+  width: min(1420px, calc(100% - 56px));
+  margin: 20px auto 0;
+  padding: 24px 0 58px;
+}
+
+.garden-block {
+  min-width: 0;
+}
+
+.essays-section {
+  grid-area: essays;
+}
+
+.notes-section {
+  grid-area: notes;
+}
+
+.patterns-section {
+  grid-area: patterns;
+}
+
+.library-section {
+  grid-area: library;
+}
+
+.section-header-link h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--ink);
+  font-family: Inter, "Noto Sans SC", system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.section-header-link h2 svg:last-child {
+  color: var(--clay);
+  transition: transform 0.2s ease;
+}
+
+.section-header-link:hover h2 {
+  color: var(--clay);
+}
+
+.section-header-link:hover h2 svg:last-child {
+  transform: translateX(4px);
+}
+
+.subheader {
+  max-width: 680px;
+  margin: 8px 0 20px;
+  color: var(--muted);
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+.essay-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.essay-tile {
+  display: grid;
+  align-content: start;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 246, 0.9);
+  padding: 16px;
+  box-shadow: 0 8px 22px rgba(58, 47, 26, 0.06);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.essay-tile:hover,
+.library-tile:hover,
+.pattern-row:hover {
+  border-color: rgba(157, 63, 49, 0.45);
+  box-shadow: 0 12px 28px rgba(58, 47, 26, 0.1);
+  transform: scale3d(1.01, 1.01, 1);
+}
+
+.essay-tile img {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  border: 1px solid rgba(224, 214, 189, 0.72);
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.essay-tile span {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.essay-tile h3,
+.pattern-row strong,
+.library-tile strong {
+  margin: 6px 0;
+  font-family: var(--font-body);
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1.28;
+}
+
+.essay-tile p,
+.library-tile p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.note-list,
+.pattern-list {
+  display: grid;
+}
+
+.note-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+  color: var(--ink-soft);
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.note-row svg {
+  position: relative;
+  top: 4px;
+  color: var(--moss);
+}
+
+.note-row:hover {
+  border-color: var(--blue);
+  color: var(--clay);
+  transform: translateX(3px);
+}
+
+.pattern-row {
+  display: grid;
+  gap: 5px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 13px 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.pattern-row span,
+.library-tile span {
+  color: var(--moss);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.library-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.library-tile {
+  display: grid;
+  min-height: 188px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 246, 0.9);
+  padding: 18px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.library-tile em {
+  align-self: end;
+  color: var(--blue);
+  font-size: 13px;
+  font-style: normal;
+}
+
+.now-ledger {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(320px, 1fr);
+  gap: 46px;
+  width: min(1420px, calc(100% - 56px));
+  margin: 0 auto 74px;
+  border-top: 1px solid var(--line);
+  padding-top: 42px;
+}
+
+.now-ledger h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.18;
+}
+
+.now-ledger p {
+  color: var(--muted);
+}
+
+.recent-links {
+  display: grid;
+}
+
+.recent-links a {
+  display: grid;
+  grid-template-columns: 118px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+}
+
+.recent-links a:hover strong {
+  color: var(--clay);
+}
+
+.recent-links span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.recent-links strong {
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
 .garden-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.62fr);
@@ -197,7 +497,7 @@ button {
   max-width: 100%;
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: 400;
   line-height: 1.08;
   letter-spacing: 0;
   overflow-wrap: anywhere;
@@ -284,6 +584,7 @@ button {
   margin: 8px 0 0;
   font-family: var(--font-display);
   font-size: 36px;
+  font-weight: 400;
   line-height: 1.16;
   letter-spacing: 0;
 }
@@ -1168,6 +1469,7 @@ button {
   }
 
   .garden-hero,
+  .now-ledger,
   .featured-grid,
   .post-grid,
   .project-grid,
@@ -1204,6 +1506,25 @@ button {
 
   .category-tabs {
     justify-content: flex-start;
+  }
+
+  .appleton-hero,
+  .appleton-grid,
+  .now-ledger {
+    width: min(900px, calc(100% - 40px));
+  }
+
+  .appleton-hero h1 {
+    font-size: 58px;
+  }
+
+  .appleton-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "essays essays"
+      "notes patterns"
+      "library library";
+    gap: 34px 28px;
   }
 }
 
@@ -1242,6 +1563,74 @@ button {
 
   .garden-hero {
     padding-top: 48px;
+  }
+
+  .appleton-hero {
+    width: calc(100vw - 36px);
+    padding: 42px 0 22px;
+  }
+
+  .appleton-hero h1 {
+    font-size: 38px;
+    line-height: 1.08;
+  }
+
+  .appleton-hero > p {
+    max-width: calc(100vw - 36px);
+    font-size: 18px;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+  }
+
+  .appleton-hero > p span {
+    display: block;
+    max-width: 100%;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+  }
+
+  .garden-stats {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .garden-stats a {
+    min-width: 0;
+  }
+
+  .appleton-grid {
+    width: calc(100vw - 36px);
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "essays"
+      "notes"
+      "patterns"
+      "library";
+    gap: 34px;
+  }
+
+  .essay-card-grid,
+  .library-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .now-ledger {
+    width: calc(100vw - 36px);
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .now-ledger h2 {
+    font-size: 28px;
+  }
+
+  .recent-links a {
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+  }
+
+  .recent-links span {
+    grid-column: 1 / -1;
   }
 
   .garden-hero h1,
