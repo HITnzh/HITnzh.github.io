@@ -64,9 +64,9 @@ function submitSearch() {
 <template>
   <main class="page-shell">
     <section class="page-hero compact-hero">
-      <p class="eyebrow">Articles</p>
-      <h1>文章</h1>
-      <p>技术、研究、项目和生活的长期记录。</p>
+      <p class="eyebrow">The Garden</p>
+      <h1>文章与笔记。</h1>
+      <p>长文、教程、研究记录和一些还在生长的想法。它们会被搜索、重读、改写，也会在归档里留下时间。</p>
     </section>
 
     <section class="section-wrap">
@@ -92,8 +92,8 @@ function submitSearch() {
         <h2>正在加载文章</h2>
         <p>稍等一下，内容正在回来。</p>
       </div>
-      <div v-else-if="filteredPosts.length" class="post-grid">
-        <PostCard v-for="post in filteredPosts" :key="post.slug" :post="post" />
+      <div v-else-if="filteredPosts.length" class="post-index-list">
+        <PostCard v-for="post in filteredPosts" :key="post.slug" :post="post" compact />
       </div>
       <div v-else class="empty-state">
         <h2>没有找到匹配的文章</h2>

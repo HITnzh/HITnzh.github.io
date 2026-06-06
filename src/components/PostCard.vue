@@ -30,7 +30,7 @@ defineProps({
       <div class="post-card-bottom">
         <span class="category-chip">{{ post.category }}</span>
         <RouterLink class="read-link" :to="`/posts/${post.slug}`" :aria-label="`阅读 ${post.title}`">
-          阅读 <ArrowUpRight :size="16" />
+          进入 <ArrowUpRight :size="16" />
         </RouterLink>
       </div>
     </div>

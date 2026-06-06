@@ -36,7 +36,6 @@ watch(() => route.params.slug, (slug) => loadPost(slug))
   <main v-else-if="post" class="article-page">
     <article>
       <header class="article-header">
-        <img :src="post.cover" :alt="post.title" />
         <div class="article-title">
           <RouterLink class="category-chip" :to="`/posts?category=${post.category}`">
             {{ post.category }}
@@ -48,6 +47,9 @@ watch(() => route.params.slug, (slug) => loadPost(slug))
             <span><Clock3 :size="16" />{{ post.readTime }}</span>
           </div>
         </div>
+        <figure class="article-figure">
+          <img :src="post.cover" :alt="post.title" />
+        </figure>
       </header>
 
       <div class="article-layout">
