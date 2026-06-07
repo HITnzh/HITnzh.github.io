@@ -8,10 +8,31 @@ const route = useRoute()
 const posts = ref([])
 const post = ref(null)
 const loading = ref(true)
+const contentBlocks = computed(() => (Array.isArray(post.value?.content) ? post.value.content : []))
 const postIndex = computed(() => posts.value.findIndex((item) => item.slug === route.params.slug))
 const previousPost = computed(() => (postIndex.value > 0 ? posts.value[postIndex.value - 1] : null))
 const nextPost = computed(() => (postIndex.value >= 0 && postIndex.value < posts.value.length - 1 ? posts.value[postIndex.value + 1] : null))
-const toc = computed(() => post.value?.content.filter((block) => block.heading).map((block) => block.heading) ?? [])
+const toc = computed(() => contentBlocks.value.filter((block) => block.heading).map((block) => block.heading))
+
+function blockKey(block, index) {
+  return block.heading || block.src || block.code || index
+}
+
+function isImageBlock(block) {
+  return block.type === 'image' || Boolean(block.src || block.image?.src)
+}
+
+function imageSource(block) {
+  return block.src || block.image?.src
+}
+
+function imageAlt(block) {
+  return block.alt || block.caption || block.image?.alt || '文章图片'
+}
+
+function isCodeBlock(block) {
+  return block.type === 'code' && block.code
+}
 
 async function loadPost(slug) {
   loading.value = true
@@ -59,10 +80,17 @@ watch(() => route.params.slug, (slug) => loadPost(slug))
         </aside>
 
         <div class="article-body">
-          <section v-for="block in post.content" :key="block.heading" :id="block.heading">
-            <h2>{{ block.heading }}</h2>
-            <p v-for="paragraph in block.paragraphs" :key="paragraph">{{ paragraph }}</p>
-            <pre v-if="block.code"><code>{{ block.code }}</code></pre>
+          <section v-for="(block, index) in contentBlocks" :key="blockKey(block, index)" :id="block.heading">
+            <figure v-if="isImageBlock(block)" class="article-inline-media">
+              <img :src="imageSource(block)" :alt="imageAlt(block)" loading="lazy" />
+              <figcaption v-if="block.caption">{{ block.caption }}</figcaption>
+            </figure>
+            <pre v-else-if="isCodeBlock(block)"><code>{{ block.code }}</code></pre>
+            <template v-else>
+              <h2 v-if="block.heading">{{ block.heading }}</h2>
+              <p v-for="paragraph in block.paragraphs" :key="paragraph">{{ paragraph }}</p>
+              <pre v-if="block.code"><code>{{ block.code }}</code></pre>
+            </template>
           </section>
 
           <div class="tag-list">

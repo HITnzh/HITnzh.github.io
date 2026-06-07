@@ -1,12 +1,16 @@
 <script setup>
-import { Menu, Search, X } from 'lucide-vue-next'
-import { computed, ref, watch } from 'vue'
+import { Menu, PenLine, Search, X } from 'lucide-vue-next'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { getBackendStatus, getSession, onSessionChange } from '../services/adminService'
 
 const route = useRoute()
 const router = useRouter()
+const backend = getBackendStatus()
 const isOpen = ref(false)
 const query = ref('')
+const session = ref(null)
+let stopSessionWatch = () => {}
 
 const links = [
   { label: '首页', to: '/' },
@@ -17,6 +21,7 @@ const links = [
 ]
 
 const menuIcon = computed(() => (isOpen.value ? X : Menu))
+const showAdminTools = computed(() => backend.configured && session.value)
 
 watch(
   () => route.fullPath,
@@ -26,6 +31,17 @@ watch(
   },
   { immediate: true },
 )
+
+onMounted(async () => {
+  session.value = await getSession()
+  stopSessionWatch = onSessionChange((nextSession) => {
+    session.value = nextSession
+  })
+})
+
+onUnmounted(() => {
+  stopSessionWatch()
+})
 
 function submitSearch() {
   const q = query.value.trim()
@@ -50,6 +66,11 @@ function submitSearch() {
       <Search :size="18" aria-hidden="true" />
       <input v-model="query" type="search" placeholder="搜索文章" aria-label="搜索文章" />
     </form>
+
+    <RouterLink v-if="showAdminTools" class="admin-write-link" to="/admin/posts/new">
+      <PenLine :size="17" />
+      <span>写文章</span>
+    </RouterLink>
 
     <button class="icon-button menu-toggle" type="button" aria-label="打开导航" @click="isOpen = !isOpen">
       <component :is="menuIcon" :size="20" />

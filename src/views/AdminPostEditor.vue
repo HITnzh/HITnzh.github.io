@@ -1,6 +1,6 @@
 <script setup>
 import { Upload } from 'lucide-vue-next'
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getAdminPost, getBackendStatus, getSession, savePost, uploadAsset } from '../services/adminService'
 
@@ -11,10 +11,13 @@ const isNew = computed(() => route.name === 'admin-post-new')
 const loading = ref(true)
 const saving = ref(false)
 const message = ref('')
+const bodyEditor = ref(null)
 const form = ref({
   id: null,
   title: '',
   slug: '',
+  category_name: '随笔',
+  tags: '',
   excerpt: '',
   cover_image: '',
   status: 'draft',
@@ -41,21 +44,127 @@ function ensureSlug() {
 function contentToText(content) {
   if (typeof content === 'string') return content
   if (!Array.isArray(content)) return ''
-  return content.flatMap((block) => [block.heading, ...(block.paragraphs || []), block.code]).filter(Boolean).join('\n\n')
+
+  return content
+    .map((block) => {
+      if (block.type === 'image' || block.src || block.image?.src) {
+        const src = block.src || block.image?.src
+        const alt = block.alt || block.caption || block.image?.alt || '图片'
+        return `![${alt}](${src})`
+      }
+
+      if (block.type === 'code' && block.code) {
+        return `\`\`\`\n${block.code}\n\`\`\``
+      }
+
+      return [
+        block.heading ? `## ${block.heading}` : '',
+        ...(block.paragraphs || []),
+        block.code ? `\`\`\`\n${block.code}\n\`\`\`` : '',
+      ]
+        .filter(Boolean)
+        .join('\n\n')
+    })
+    .filter(Boolean)
+    .join('\n\n')
 }
 
 function textToContent(value) {
-  const paragraphs = value
-    .split(/\n{2,}/)
-    .map((item) => item.trim())
-    .filter(Boolean)
+  const blocks = []
+  const lines = value.replace(/\r\n/g, '\n').split('\n')
+  let section = { heading: '正文', paragraphs: [] }
+  let paragraph = []
+  let code = null
 
-  return [
-    {
-      heading: '正文',
-      paragraphs,
-    },
-  ]
+  function ensureSection() {
+    if (!section) section = { heading: '正文', paragraphs: [] }
+  }
+
+  function flushParagraph() {
+    if (!paragraph.length) return
+    ensureSection()
+    section.paragraphs.push(paragraph.join('\n').trim())
+    paragraph = []
+  }
+
+  function flushSection() {
+    flushParagraph()
+    if (section && (section.paragraphs.length || section.heading !== '正文')) {
+      blocks.push(section)
+    }
+    section = null
+  }
+
+  for (const line of lines) {
+    const trimmed = line.trim()
+
+    if (code) {
+      if (trimmed.startsWith('```')) {
+        blocks.push({ type: 'code', code: code.join('\n') })
+        code = null
+      } else {
+        code.push(line)
+      }
+      continue
+    }
+
+    if (trimmed.startsWith('```')) {
+      flushSection()
+      code = []
+      continue
+    }
+
+    const heading = trimmed.match(/^#{2,3}\s+(.+)$/)
+    if (heading) {
+      flushSection()
+      section = { heading: heading[1].trim(), paragraphs: [] }
+      continue
+    }
+
+    const image = trimmed.match(/^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]+)")?\)$/)
+    if (image) {
+      flushSection()
+      blocks.push({
+        type: 'image',
+        src: image[2],
+        alt: image[1] || '文章图片',
+        caption: image[3] || image[1] || '',
+      })
+      continue
+    }
+
+    if (!trimmed) {
+      flushParagraph()
+      continue
+    }
+
+    paragraph.push(trimmed)
+  }
+
+  if (code) blocks.push({ type: 'code', code: code.join('\n') })
+  flushSection()
+
+  return blocks.length ? blocks : [{ heading: '正文', paragraphs: [] }]
+}
+
+function insertBodyText(text) {
+  const textarea = bodyEditor.value
+  const insertion = `\n\n${text}\n\n`
+
+  if (!textarea) {
+    form.value.body = `${form.value.body}${insertion}`
+    return
+  }
+
+  const start = textarea.selectionStart
+  const end = textarea.selectionEnd
+  form.value.body = `${form.value.body.slice(0, start)}${insertion}${form.value.body.slice(end)}`
+
+  nextTick(() => {
+    const cursor = start + insertion.length
+    textarea.focus()
+    textarea.setSelectionRange(cursor, cursor)
+  })
 }
 
 async function load() {
@@ -77,6 +186,8 @@ async function load() {
         id: post.id,
         title: post.title || '',
         slug: post.slug || '',
+        category_name: post.category?.name || '随笔',
+        tags: (post.post_tags || []).map((item) => item.tags?.name).filter(Boolean).join('，'),
         excerpt: post.excerpt || '',
         cover_image: post.cover_image || '',
         status: post.status || 'draft',
@@ -124,6 +235,22 @@ async function uploadCover(event) {
   }
 }
 
+async function uploadBodyImage(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  message.value = '正在上传正文图片'
+  try {
+    const url = await uploadAsset(file)
+    const alt = file.name.replace(/\.[^.]+$/, '')
+    insertBodyText(`![${alt}](${url})`)
+    message.value = '正文图片已上传并插入'
+  } catch (error) {
+    message.value = error.message
+  } finally {
+    event.target.value = ''
+  }
+}
+
 onMounted(load)
 </script>
 
@@ -154,14 +281,39 @@ onMounted(load)
             Slug
             <input v-model="form.slug" type="text" required />
           </label>
+          <div class="editor-inline-fields">
+            <label>
+              分类
+              <input v-model="form.category_name" type="text" placeholder="技术 / 生活 / 研究" />
+            </label>
+            <label>
+              标签
+              <input v-model="form.tags" type="text" placeholder="Vue，部署，笔记" />
+            </label>
+          </div>
           <label>
             摘要
             <textarea v-model="form.excerpt" rows="3" required></textarea>
           </label>
-          <label>
-            正文
-            <textarea v-model="form.body" class="body-editor" rows="16" required></textarea>
-          </label>
+          <div class="editor-field">
+            <div class="field-label-row">
+              <span>正文</span>
+              <label class="inline-upload-control">
+                <Upload :size="16" />
+                插入图片
+                <input type="file" accept="image/*" @change="uploadBodyImage" />
+              </label>
+            </div>
+            <textarea
+              ref="bodyEditor"
+              v-model="form.body"
+              class="body-editor"
+              rows="18"
+              required
+              placeholder="支持 ## 小标题、空行分段、``` 代码块，以及 ![说明](图片URL) 插图。"
+            ></textarea>
+            <p class="field-hint">正文图片会上传到 Supabase Storage，并自动插入到当前光标位置。</p>
+          </div>
         </div>
 
         <aside class="editor-sidebar">
@@ -184,6 +336,9 @@ onMounted(load)
             封面 URL
             <input v-model="form.cover_image" type="url" />
           </label>
+          <div v-if="form.cover_image" class="cover-preview">
+            <img :src="form.cover_image" alt="文章封面预览" />
+          </div>
           <label class="upload-control">
             <Upload :size="18" />
             上传封面

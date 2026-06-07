@@ -30,6 +30,87 @@ export async function signOut() {
   if (error) throw error
 }
 
+export function onSessionChange(callback) {
+  if (!isSupabaseConfigured) return () => {}
+
+  const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+    callback(session)
+  })
+
+  return () => data.subscription.unsubscribe()
+}
+
+function slugify(value) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function parseTagNames(value) {
+  if (Array.isArray(value)) return value.map((item) => String(item).trim()).filter(Boolean)
+  return String(value || '')
+    .split(/[,，]/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+async function ensureCategoryId(name) {
+  const trimmed = String(name || '').trim()
+  if (!trimmed) return null
+
+  const { data: existing, error: selectError } = await supabase
+    .from('categories')
+    .select('id')
+    .eq('name', trimmed)
+    .maybeSingle()
+
+  if (selectError) throw selectError
+  if (existing) return existing.id
+
+  const { data, error } = await supabase
+    .from('categories')
+    .insert({ name: trimmed, slug: slugify(trimmed) })
+    .select('id')
+    .single()
+
+  if (error) throw error
+  return data.id
+}
+
+async function syncPostTags(postId, tagValue) {
+  const names = Array.from(new Set(parseTagNames(tagValue)))
+  const { error: deleteError } = await supabase.from('post_tags').delete().eq('post_id', postId)
+  if (deleteError) throw deleteError
+
+  if (!names.length) return
+
+  const { data: existingTags, error: selectError } = await supabase
+    .from('tags')
+    .select('id, name')
+    .in('name', names)
+
+  if (selectError) throw selectError
+
+  const existingNames = new Set((existingTags || []).map((tag) => tag.name))
+  const missingTags = names
+    .filter((name) => !existingNames.has(name))
+    .map((name) => ({ name, slug: slugify(name) }))
+
+  let createdTags = []
+  if (missingTags.length) {
+    const { data, error } = await supabase.from('tags').insert(missingTags).select('id, name')
+    if (error) throw error
+    createdTags = data || []
+  }
+
+  const tags = [...(existingTags || []), ...createdTags]
+  const links = tags.map((tag) => ({ post_id: postId, tag_id: tag.id }))
+  const { error: insertError } = await supabase.from('post_tags').insert(links)
+  if (insertError) throw insertError
+}
+
 export async function listAdminPosts() {
   if (!isSupabaseConfigured) return []
 
@@ -45,7 +126,12 @@ export async function listAdminPosts() {
 export async function getAdminPost(id) {
   if (!isSupabaseConfigured) return null
 
-  const { data, error } = await supabase.from('posts').select('*').eq('id', id).single()
+  const { data, error } = await supabase
+    .from('posts')
+    .select('*, category:categories(name), post_tags(tags(name))')
+    .eq('id', id)
+    .single()
+
   if (error) throw error
   return data
 }
@@ -55,6 +141,7 @@ export async function savePost(payload) {
     throw new Error('Supabase is not configured.')
   }
 
+  const categoryId = await ensureCategoryId(payload.category_name)
   const record = {
     slug: payload.slug,
     title: payload.title,
@@ -64,6 +151,7 @@ export async function savePost(payload) {
     status: payload.status,
     featured: payload.featured,
     read_time: payload.read_time,
+    category_id: categoryId,
     published_at: payload.status === 'published' ? payload.published_at || new Date().toISOString() : null,
   }
 
@@ -73,6 +161,7 @@ export async function savePost(payload) {
 
   const { data, error } = await query
   if (error) throw error
+  await syncPostTags(data.id, payload.tags)
   return data
 }
 
