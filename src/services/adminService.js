@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase, supabaseConfig } from '../lib/supabase'
+import { recommendations as localRecommendations } from '../data/recommendations'
 
 export function getBackendStatus() {
   return {
@@ -111,6 +112,57 @@ async function syncPostTags(postId, tagValue) {
   if (insertError) throw insertError
 }
 
+function normalizeRecommendation(item) {
+  return {
+    id: item.id || crypto.randomUUID(),
+    slug: item.slug || slugify(item.title),
+    type: item.type || '安利',
+    title: item.title || '',
+    creator: item.creator || '',
+    note: item.note || '',
+    cover: item.cover || '',
+    shareImage: item.shareImage || item.share_image || '',
+    linkUrl: item.linkUrl || item.link_url || '',
+    linkLabel: item.linkLabel || item.link_label || '打开链接',
+    tags: parseTagNames(item.tags),
+    status: item.status || 'draft',
+    featured: Boolean(item.featured),
+    sortOrder: Number(item.sortOrder ?? item.sort_order ?? 100),
+    tone: item.tone || 'moss',
+  }
+}
+
+async function getRecommendationSettingItems() {
+  if (!isSupabaseConfigured) return localRecommendations.map(normalizeRecommendation)
+
+  const { data, error } = await supabase
+    .from('site_settings')
+    .select('value')
+    .eq('key', 'recommendations')
+    .maybeSingle()
+
+  if (error) throw error
+
+  const value = data?.value
+  const items = Array.isArray(value) ? value : Array.isArray(value?.items) ? value.items : localRecommendations
+  return items.map(normalizeRecommendation)
+}
+
+async function saveRecommendationSettingItems(items) {
+  const normalizedItems = items.map(normalizeRecommendation)
+  const { error } = await supabase.from('site_settings').upsert({
+    key: 'recommendations',
+    value: {
+      items: normalizedItems,
+      updated_at: new Date().toISOString(),
+    },
+    updated_at: new Date().toISOString(),
+  })
+
+  if (error) throw error
+  return normalizedItems
+}
+
 export async function listAdminPosts() {
   if (!isSupabaseConfigured) return []
 
@@ -163,6 +215,52 @@ export async function savePost(payload) {
   if (error) throw error
   await syncPostTags(data.id, payload.tags)
   return data
+}
+
+export async function listAdminRecommendations() {
+  if (!isSupabaseConfigured) return []
+
+  const items = await getRecommendationSettingItems()
+  return [...items].sort((a, b) => a.sortOrder - b.sortOrder || a.title.localeCompare(b.title))
+}
+
+export async function getAdminRecommendation(id) {
+  if (!isSupabaseConfigured) return null
+
+  const items = await getRecommendationSettingItems()
+  return items.find((item) => item.id === id || item.slug === id) || null
+}
+
+export async function saveRecommendation(payload) {
+  if (!isSupabaseConfigured) {
+    throw new Error('Supabase is not configured.')
+  }
+
+  const items = await getRecommendationSettingItems()
+  const record = normalizeRecommendation({
+    ...payload,
+    slug: payload.slug || slugify(payload.title),
+  })
+  const index = items.findIndex((item) => item.id === record.id)
+  const nextItems = [...items]
+
+  if (index >= 0) {
+    nextItems[index] = record
+  } else {
+    nextItems.push(record)
+  }
+
+  await saveRecommendationSettingItems(nextItems)
+  return { id: record.id }
+}
+
+export async function deleteRecommendation(id) {
+  if (!isSupabaseConfigured) {
+    throw new Error('Supabase is not configured.')
+  }
+
+  const items = await getRecommendationSettingItems()
+  await saveRecommendationSettingItems(items.filter((item) => item.id !== id))
 }
 
 export async function uploadAsset(file) {

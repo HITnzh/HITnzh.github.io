@@ -1,61 +1,10 @@
 <script setup>
 import { ArrowRight, ArrowUpRight, BookOpen, Feather, Heart, NotebookPen, Shapes } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
-import { getPublishedPosts } from '../services/contentService'
+import { getPublishedPosts, getPublishedRecommendations } from '../services/contentService'
 
 const posts = ref([])
-
-// Set cover to a local /images/... path or an absolute URL to show an image cover.
-const recommendations = [
-  {
-    type: '番剧',
-    title: '葬送的芙莉莲',
-    creator: '山田钟人 / 阿部司',
-    note: '温柔、克制，关于时间和同行者的长旅。',
-    cover: '',
-    tone: 'moss',
-  },
-  {
-    type: '书籍',
-    title: '编码',
-    creator: 'Charles Petzold',
-    note: '从电路、符号到计算机抽象的漂亮路线。',
-    cover: '',
-    tone: 'ink',
-  },
-  {
-    type: '专辑',
-    title: 'Minecraft Volume Alpha',
-    creator: 'C418',
-    note: '写代码、整理笔记时很适合循环播放。',
-    cover: '',
-    tone: 'teal',
-  },
-  {
-    type: '书籍',
-    title: '三体',
-    creator: '刘慈欣',
-    note: '宏大想象、工程直觉和宇宙尺度的压迫感。',
-    cover: '',
-    tone: 'blue',
-  },
-  {
-    type: '番剧',
-    title: '跃动青春',
-    creator: '高松美咲',
-    note: '明亮、真诚，又不回避青春里的笨拙。',
-    cover: '',
-    tone: 'sun',
-  },
-  {
-    type: '专辑',
-    title: 'Random Access Memories',
-    creator: 'Daft Punk',
-    note: '复古、精密，适合夜里把节奏打开。',
-    cover: '',
-    tone: 'plum',
-  },
-]
+const recommendations = ref([])
 
 const essayPosts = computed(() => posts.value.filter((post) => post.featured).slice(0, 4))
 const notePosts = computed(() => posts.value.filter((post) => ['研究', '生活', '前端'].includes(post.category)).slice(0, 5))
@@ -66,13 +15,15 @@ const columnPosts = computed(() => {
 const latestPosts = computed(() => posts.value.slice(0, 4))
 
 const gardenStats = computed(() => [
-  { label: 'Essays', value: posts.value.length, text: '文章和长笔记' },
-  { label: 'Recs', value: recommendations.length, text: '番剧、书籍、专辑' },
-  { label: 'Notes', value: notePosts.value.length, text: '研究和日常记录' },
+  { label: 'Essays', value: posts.value.length, text: '文章和长笔记', to: '/posts' },
+  { label: 'Recs', value: recommendations.value.length, text: '番剧、书籍、专辑', to: '/recommendations' },
+  { label: 'Notes', value: notePosts.value.length, text: '研究和日常记录', to: '/posts' },
 ])
 
 onMounted(async () => {
-  posts.value = await getPublishedPosts()
+  const [postData, recommendationData] = await Promise.all([getPublishedPosts(), getPublishedRecommendations()])
+  posts.value = postData
+  recommendations.value = recommendationData.slice(0, 6)
 })
 </script>
 
@@ -88,7 +39,7 @@ onMounted(async () => {
         <span>文章会被修订，想法会互相连接。</span>
       </p>
       <div class="garden-stats" aria-label="内容概览">
-        <RouterLink v-for="item in gardenStats" :key="item.label" to="/posts">
+        <RouterLink v-for="item in gardenStats" :key="item.label" :to="item.to">
           <strong>{{ item.value }}</strong>
           <span>{{ item.label }}</span>
           <em>{{ item.text }}</em>
@@ -143,15 +94,16 @@ onMounted(async () => {
       </section>
 
       <section class="garden-block recommend-section">
-        <RouterLink class="section-header-link" to="/posts">
+        <RouterLink class="section-header-link" to="/recommendations">
           <h2><Heart :size="21" /> 安利区 <ArrowRight :size="18" /></h2>
         </RouterLink>
         <p class="subheader">一些私心推荐：番剧、书籍、专辑，以及那些值得反复回来的东西。</p>
         <div class="recommend-grid">
-          <article
+          <RouterLink
             v-for="item in recommendations"
             :key="`${item.type}-${item.title}`"
             class="recommend-card"
+            :to="`/recommendations/${item.slug}`"
           >
             <div class="recommend-cover" :class="[{ 'has-image': item.cover }, `tone-${item.tone}`]">
               <span class="recommend-badge">{{ item.type }}</span>
@@ -169,7 +121,7 @@ onMounted(async () => {
             <strong>{{ item.title }}</strong>
             <em>{{ item.creator }}</em>
             <p>{{ item.note }}</p>
-          </article>
+          </RouterLink>
         </div>
       </section>
     </section>

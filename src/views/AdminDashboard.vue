@@ -1,5 +1,5 @@
 <script setup>
-import { FileText, Settings } from 'lucide-vue-next'
+import { FileText, Heart, Settings } from 'lucide-vue-next'
 import { getBackendStatus } from '../services/adminService'
 
 const backend = getBackendStatus()
@@ -18,6 +18,11 @@ const backend = getBackendStatus()
         <FileText :size="24" />
         <strong>文章管理</strong>
         <span>新建、编辑、发布和查看草稿。</span>
+      </RouterLink>
+      <RouterLink class="admin-action-card" to="/admin/recommendations">
+        <Heart :size="24" />
+        <strong>安利管理</strong>
+        <span>新增推荐、上传封面、配置详情链接。</span>
       </RouterLink>
       <div class="admin-action-card">
         <Settings :size="24" />

@@ -4,11 +4,15 @@ import AdminDashboard from '../views/AdminDashboard.vue'
 import AdminLogin from '../views/AdminLogin.vue'
 import AdminPostEditor from '../views/AdminPostEditor.vue'
 import AdminPosts from '../views/AdminPosts.vue'
+import AdminRecommendationEditor from '../views/AdminRecommendationEditor.vue'
+import AdminRecommendations from '../views/AdminRecommendations.vue'
 import Archive from '../views/Archive.vue'
 import Home from '../views/Home.vue'
 import PostDetail from '../views/PostDetail.vue'
 import Posts from '../views/Posts.vue'
 import Projects from '../views/Projects.vue'
+import RecommendationDetail from '../views/RecommendationDetail.vue'
+import Recommendations from '../views/Recommendations.vue'
 
 const routes = [
   {
@@ -25,6 +29,16 @@ const routes = [
     path: '/posts/:slug',
     name: 'post-detail',
     component: PostDetail,
+  },
+  {
+    path: '/recommendations',
+    name: 'recommendations',
+    component: Recommendations,
+  },
+  {
+    path: '/recommendations/:slug',
+    name: 'recommendation-detail',
+    component: RecommendationDetail,
   },
   {
     path: '/archive',
@@ -65,6 +79,21 @@ const routes = [
     path: '/admin/posts/:id/edit',
     name: 'admin-post-edit',
     component: AdminPostEditor,
+  },
+  {
+    path: '/admin/recommendations',
+    name: 'admin-recommendations',
+    component: AdminRecommendations,
+  },
+  {
+    path: '/admin/recommendations/new',
+    name: 'admin-recommendation-new',
+    component: AdminRecommendationEditor,
+  },
+  {
+    path: '/admin/recommendations/:id/edit',
+    name: 'admin-recommendation-edit',
+    component: AdminRecommendationEditor,
   },
   {
     path: '/:pathMatch(.*)*',

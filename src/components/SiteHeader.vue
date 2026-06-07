@@ -15,6 +15,7 @@ let stopSessionWatch = () => {}
 const links = [
   { label: '首页', to: '/' },
   { label: '文章', to: '/posts' },
+  { label: '安利', to: '/recommendations' },
   { label: '归档', to: '/archive' },
   { label: '项目', to: '/projects' },
   { label: '关于', to: '/about' },

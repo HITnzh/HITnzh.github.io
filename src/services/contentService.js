@@ -1,5 +1,6 @@
 import { categories as localCategories, posts as localPosts } from '../data/posts'
 import { projects as localProjects } from '../data/projects'
+import { recommendations as localRecommendations } from '../data/recommendations'
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 
 function asPost(row) {
@@ -38,8 +39,51 @@ function asProject(row) {
   }
 }
 
+function asRecommendation(item) {
+  return {
+    id: item.id || item.slug,
+    slug: item.slug,
+    type: item.type || '安利',
+    title: item.title,
+    creator: item.creator || '',
+    note: item.note || item.description || '',
+    cover: item.cover || item.cover_image || '',
+    shareImage: item.shareImage || item.share_image || item.cover || item.cover_image || '',
+    linkUrl: item.linkUrl || item.link_url || '',
+    linkLabel: item.linkLabel || item.link_label || '打开链接',
+    tags: Array.isArray(item.tags) ? item.tags : [],
+    status: item.status || 'published',
+    featured: Boolean(item.featured),
+    sortOrder: Number(item.sortOrder ?? item.sort_order ?? 100),
+    tone: item.tone || 'moss',
+  }
+}
+
 function sortPosts(items) {
   return [...items].sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+}
+
+function sortRecommendations(items) {
+  return [...items].sort((a, b) => a.sortOrder - b.sortOrder || a.title.localeCompare(b.title))
+}
+
+async function getRecommendationItems() {
+  if (!isSupabaseConfigured) return localRecommendations.map(asRecommendation)
+
+  const { data, error } = await supabase
+    .from('site_settings')
+    .select('value')
+    .eq('key', 'recommendations')
+    .maybeSingle()
+
+  if (error) {
+    console.warn('Falling back to local recommendations:', error.message)
+    return localRecommendations.map(asRecommendation)
+  }
+
+  const value = data?.value
+  const items = Array.isArray(value) ? value : Array.isArray(value?.items) ? value.items : localRecommendations
+  return items.map(asRecommendation)
 }
 
 export async function getPublishedPosts() {
@@ -137,4 +181,14 @@ export async function getProjects() {
   }
 
   return data.map(asProject)
+}
+
+export async function getPublishedRecommendations() {
+  const items = await getRecommendationItems()
+  return sortRecommendations(items.filter((item) => item.status === 'published'))
+}
+
+export async function getRecommendationBySlug(slug) {
+  const items = await getPublishedRecommendations()
+  return items.find((item) => item.slug === slug) || null
 }
