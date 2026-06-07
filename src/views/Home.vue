@@ -1,26 +1,71 @@
 <script setup>
-import { ArrowRight, ArrowUpRight, BookOpen, Feather, Folder, Library, NotebookPen, Shapes } from 'lucide-vue-next'
+import { ArrowRight, ArrowUpRight, BookOpen, Feather, Heart, NotebookPen, Shapes } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
-import { getProjects, getPublishedPosts } from '../services/contentService'
+import { getPublishedPosts } from '../services/contentService'
 
 const posts = ref([])
-const projects = ref([])
+
+const recommendations = [
+  {
+    type: '番剧',
+    title: '葬送的芙莉莲',
+    creator: '山田钟人 / 阿部司',
+    note: '温柔、克制，关于时间和同行者的长旅。',
+    tone: 'moss',
+  },
+  {
+    type: '书籍',
+    title: '编码',
+    creator: 'Charles Petzold',
+    note: '从电路、符号到计算机抽象的漂亮路线。',
+    tone: 'ink',
+  },
+  {
+    type: '专辑',
+    title: 'Minecraft Volume Alpha',
+    creator: 'C418',
+    note: '写代码、整理笔记时很适合循环播放。',
+    tone: 'teal',
+  },
+  {
+    type: '书籍',
+    title: '三体',
+    creator: '刘慈欣',
+    note: '宏大想象、工程直觉和宇宙尺度的压迫感。',
+    tone: 'blue',
+  },
+  {
+    type: '番剧',
+    title: '跃动青春',
+    creator: '高松美咲',
+    note: '明亮、真诚，又不回避青春里的笨拙。',
+    tone: 'sun',
+  },
+  {
+    type: '专辑',
+    title: 'Random Access Memories',
+    creator: 'Daft Punk',
+    note: '复古、精密，适合夜里把节奏打开。',
+    tone: 'plum',
+  },
+]
 
 const essayPosts = computed(() => posts.value.filter((post) => post.featured).slice(0, 4))
 const notePosts = computed(() => posts.value.filter((post) => ['研究', '生活', '前端'].includes(post.category)).slice(0, 5))
-const patternPosts = computed(() => posts.value.filter((post) => ['技术', '工程', '项目'].includes(post.category)).slice(0, 4))
+const columnPosts = computed(() => {
+  const focusedPosts = posts.value.filter((post) => ['技术', '工程', '项目', '前端'].includes(post.category))
+  return (focusedPosts.length ? focusedPosts : posts.value).slice(0, 8)
+})
 const latestPosts = computed(() => posts.value.slice(0, 4))
 
 const gardenStats = computed(() => [
   { label: 'Essays', value: posts.value.length, text: '文章和长笔记' },
-  { label: 'Projects', value: projects.value.length, text: '正在整理的实践' },
+  { label: 'Recs', value: recommendations.length, text: '番剧、书籍、专辑' },
   { label: 'Notes', value: notePosts.value.length, text: '研究和日常记录' },
 ])
 
 onMounted(async () => {
-  const [postData, projectData] = await Promise.all([getPublishedPosts(), getProjects()])
-  posts.value = postData
-  projects.value = projectData
+  posts.value = await getPublishedPosts()
 })
 </script>
 
@@ -73,31 +118,43 @@ onMounted(async () => {
         </div>
       </section>
 
-      <section class="garden-block patterns-section">
+      <section class="garden-block columns-section">
         <RouterLink class="section-header-link" to="/posts?category=技术">
-          <h2><Shapes :size="21" /> Patterns <ArrowRight :size="18" /></h2>
+          <h2><Shapes :size="21" /> 专栏文章 <ArrowRight :size="18" /></h2>
         </RouterLink>
-        <p class="subheader">Reusable choices, checklists, and engineering habits I want to remember.</p>
-        <div class="pattern-list">
-          <RouterLink v-for="post in patternPosts" :key="post.slug" :to="`/posts/${post.slug}`" class="pattern-row">
-            <span>{{ post.category }}</span>
-            <strong>{{ post.title }}</strong>
+        <p class="subheader">按主题沉淀下来的文章和系列笔记，偏技术、工程实践和项目复盘。</p>
+        <div class="column-list">
+          <RouterLink v-for="post in columnPosts" :key="post.slug" :to="`/posts/${post.slug}`" class="column-row">
+            <span class="column-mark" aria-hidden="true"></span>
+            <span class="column-copy">
+              <em>{{ post.category }} · {{ post.readTime }}</em>
+              <strong>{{ post.title }}</strong>
+              <small>{{ post.excerpt }}</small>
+            </span>
           </RouterLink>
         </div>
       </section>
 
-      <section class="garden-block library-section">
-        <RouterLink class="section-header-link" to="/projects">
-          <h2><Library :size="21" /> Library <ArrowRight :size="18" /></h2>
+      <section class="garden-block recommend-section">
+        <RouterLink class="section-header-link" to="/posts">
+          <h2><Heart :size="21" /> 安利区 <ArrowRight :size="18" /></h2>
         </RouterLink>
-        <p class="subheader">Projects, references, and things I keep returning to while building this site.</p>
-        <div class="library-grid">
-          <a v-for="project in projects.slice(0, 4)" :key="project.name" :href="project.link" class="library-tile">
-            <span>{{ project.status }}</span>
-            <strong>{{ project.name }}</strong>
-            <p>{{ project.description }}</p>
-            <em>{{ project.stack.join(' · ') }}</em>
-          </a>
+        <p class="subheader">一些私心推荐：番剧、书籍、专辑，以及那些值得反复回来的东西。</p>
+        <div class="recommend-grid">
+          <article
+            v-for="item in recommendations"
+            :key="`${item.type}-${item.title}`"
+            class="recommend-card"
+          >
+            <div class="recommend-cover" :class="`tone-${item.tone}`">
+              <span>{{ item.type }}</span>
+              <strong>{{ item.title }}</strong>
+              <em>{{ item.creator }}</em>
+            </div>
+            <strong>{{ item.title }}</strong>
+            <em>{{ item.creator }}</em>
+            <p>{{ item.note }}</p>
+          </article>
         </div>
       </section>
     </section>
