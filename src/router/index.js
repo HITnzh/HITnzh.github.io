@@ -1,6 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import About from '../views/About.vue'
 import AdminDashboard from '../views/AdminDashboard.vue'
+import Moments from '../views/Moments.vue'
+import Gallery from '../views/Gallery.vue'
+import GalleryAlbum from '../views/GalleryAlbum.vue'
 import AdminLogin from '../views/AdminLogin.vue'
 import AdminPostEditor from '../views/AdminPostEditor.vue'
 import AdminPosts from '../views/AdminPosts.vue'
@@ -49,6 +52,21 @@ const routes = [
     path: '/projects',
     name: 'projects',
     component: Projects,
+  },
+  {
+    path: '/moments',
+    name: 'moments',
+    component: Moments,
+  },
+  {
+    path: '/gallery',
+    name: 'gallery',
+    component: Gallery,
+  },
+  {
+    path: '/gallery/:albumId',
+    name: 'gallery-album',
+    component: GalleryAlbum,
   },
   {
     path: '/about',

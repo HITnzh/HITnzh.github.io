@@ -16,6 +16,8 @@ const links = [
   { label: '首页', to: '/' },
   { label: '文章', to: '/posts' },
   { label: '安利', to: '/recommendations' },
+  { label: '说说', to: '/moments' },
+  { label: '相册', to: '/gallery' },
   { label: '归档', to: '/archive' },
   { label: '项目', to: '/projects' },
   { label: '关于', to: '/about' },
