@@ -1894,6 +1894,121 @@ button {
   background: var(--paper);
   color: var(--ink);
   box-shadow: var(--shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.back-top:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(58, 47, 26, 0.16);
+}
+
+/* ---- Petal Canvas ---- */
+
+.petal-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ---- Side Decorations ---- */
+
+.side-decor {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: clamp(40px, 6vw, 90px);
+  pointer-events: none;
+  opacity: 0.28;
+  background-repeat: repeat-y;
+  background-position: top center;
+  background-size: contain;
+}
+
+.side-decor-left {
+  left: 0;
+  background-image:
+    radial-gradient(ellipse 3px 12px at 50% 18%, rgba(140, 110, 175, 0.35), transparent),
+    radial-gradient(ellipse 3px 12px at 50% 38%, rgba(155, 125, 185, 0.3), transparent),
+    radial-gradient(ellipse 3px 12px at 50% 58%, rgba(140, 110, 175, 0.35), transparent),
+    radial-gradient(ellipse 3px 12px at 50% 78%, rgba(155, 125, 185, 0.3), transparent),
+    radial-gradient(ellipse 3px 12px at 50% 98%, rgba(140, 110, 175, 0.35), transparent),
+    repeating-linear-gradient(
+      180deg,
+      transparent,
+      transparent 58px,
+      rgba(148, 115, 175, 0.14) 58px,
+      rgba(148, 115, 175, 0.14) 59px
+    );
+}
+
+.side-decor-right {
+  right: 0;
+  background-image:
+    radial-gradient(ellipse 3px 12px at 50% 22%, rgba(155, 125, 185, 0.3), transparent),
+    radial-gradient(ellipse 3px 12px at 50% 42%, rgba(140, 110, 175, 0.35), transparent),
+    radial-gradient(ellipse 3px 12px at 50% 62%, rgba(155, 125, 185, 0.3), transparent),
+    radial-gradient(ellipse 3px 12px at 50% 82%, rgba(140, 110, 175, 0.35), transparent),
+    repeating-linear-gradient(
+      180deg,
+      transparent,
+      transparent 58px,
+      rgba(148, 115, 175, 0.14) 58px,
+      rgba(148, 115, 175, 0.14) 59px
+    );
+}
+
+/* ---- Interactive Enhancements ---- */
+
+/* Smooth link transitions globally */
+a, button {
+  transition: color 0.22s ease, background 0.22s ease, border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+/* Card hover lift */
+.essay-tile:hover,
+.column-row:hover,
+.gallery-card-v2:hover,
+.tl-card:hover {
+  transform: translateY(-3px);
+}
+
+/* Image subtle zoom on hover */
+.essay-tile img,
+.recommend-cover img,
+.album-photo img,
+.tl-images img {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.essay-tile:hover img,
+.recommend-card:hover .recommend-cover img,
+.album-photo:hover img,
+.timeline-item:hover .tl-images img {
+  transform: scale(1.04);
+}
+
+/* Scroll reveal base */
+.garden-block,
+.now-ledger,
+.page-hero,
+.article-header,
+.album-header {
+  animation: sectionReveal 0.6s ease both;
+  animation-timeline: view();
+  animation-range: entry 8%;
+}
+
+@keyframes sectionReveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ========================================

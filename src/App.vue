@@ -1,5 +1,6 @@
 <script setup>
 import { ChevronUp } from 'lucide-vue-next'
+import PetalEffect from './components/PetalEffect.vue'
 import SiteFooter from './components/SiteFooter.vue'
 import SiteHeader from './components/SiteHeader.vue'
 
@@ -9,6 +10,9 @@ function scrollToTop() {
 </script>
 
 <template>
+  <PetalEffect />
+  <div class="side-decor side-decor-left" aria-hidden="true"></div>
+  <div class="side-decor side-decor-right" aria-hidden="true"></div>
   <SiteHeader />
   <RouterView />
   <SiteFooter />
