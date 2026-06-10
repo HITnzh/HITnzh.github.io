@@ -1,75 +1,91 @@
 <script setup>
-import { ArrowLeft, ChevronLeft, ChevronRight, X } from 'lucide-vue-next'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { ArrowLeft, ChevronLeft, ChevronRight, Download, X } from 'lucide-vue-next'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { albums } from '../data/gallery'
 
 const route = useRoute()
 const album = computed(() => albums.find((a) => a.id === route.params.albumId) || null)
 const lightboxIndex = ref(-1)
+const lightboxOpen = ref(false)
 
 const currentImage = computed(() => {
-  if (lightboxIndex.value < 0 || !album.value) return null
+  if (!album.value || lightboxIndex.value < 0) return null
   return album.value.images[lightboxIndex.value] || null
 })
 
-function openLightbox(index) {
-  lightboxIndex.value = index
+function open(idx) {
+  lightboxIndex.value = idx
+  lightboxOpen.value = true
+  document.body.style.overflow = 'hidden'
 }
 
-function closeLightbox() {
-  lightboxIndex.value = -1
+function close() {
+  lightboxOpen.value = false
+  document.body.style.overflow = ''
+  setTimeout(() => { lightboxIndex.value = -1 }, 300)
 }
 
-function prevImage() {
+function prev() {
   if (!album.value) return
   lightboxIndex.value = (lightboxIndex.value - 1 + album.value.images.length) % album.value.images.length
 }
 
-function nextImage() {
+function next() {
   if (!album.value) return
   lightboxIndex.value = (lightboxIndex.value + 1) % album.value.images.length
 }
 
-function onKeydown(e) {
-  if (lightboxIndex.value < 0) return
-  if (e.key === 'Escape') closeLightbox()
-  if (e.key === 'ArrowLeft') prevImage()
-  if (e.key === 'ArrowRight') nextImage()
+function onKey(e) {
+  if (!lightboxOpen.value) return
+  if (e.key === 'Escape') close()
+  if (e.key === 'ArrowLeft') prev()
+  if (e.key === 'ArrowRight') next()
 }
 
-onMounted(() => window.addEventListener('keydown', onKeydown))
-onUnmounted(() => window.removeEventListener('keydown', onKeydown))
+let touchStartX = 0
+function onTouchStart(e) { touchStartX = e.touches[0].clientX }
+function onTouchEnd(e) {
+  const diff = touchStartX - e.changedTouches[0].clientX
+  if (Math.abs(diff) > 60) { diff > 0 ? next() : prev() }
+}
+
+onMounted(() => window.addEventListener('keydown', onKey))
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKey)
+  document.body.style.overflow = ''
+})
+
+watch(() => route.params.albumId, () => { lightboxIndex.value = -1; lightboxOpen.value = false })
 </script>
 
 <template>
   <main class="page-shell">
     <section v-if="album" class="section-wrap">
       <RouterLink class="back-link" to="/gallery">
-        <ArrowLeft :size="18" />
-        返回相册列表
+        <ArrowLeft :size="18" /> 返回相册
       </RouterLink>
 
-      <div class="page-hero" style="padding-top: 28px">
-        <p class="eyebrow">{{ album.date }}</p>
-        <h1>{{ album.title }}</h1>
-        <p>{{ album.description }}</p>
-      </div>
+      <header class="album-header">
+        <div>
+          <p class="eyebrow">{{ album.date }}</p>
+          <h1>{{ album.title }}</h1>
+          <p>{{ album.description }}</p>
+        </div>
+        <span class="album-photo-count">{{ album.images.length }} 张照片</span>
+      </header>
 
-      <div class="gallery-photo-grid">
-        <img
+      <div class="album-grid">
+        <figure
           v-for="(img, idx) in album.images"
           :key="idx"
-          :src="img.src"
-          :alt="img.caption || img.date"
-          loading="lazy"
-          @click="openLightbox(idx)"
-        />
-      </div>
-
-      <div v-if="album.images.length === 0" class="empty-state">
-        <h2>暂无照片</h2>
-        <p>这个相册还是空的。</p>
+          class="album-photo"
+          :class="{ 'photo-wide': idx === 0 }"
+          @click="open(idx)"
+        >
+          <img :src="img.src" :alt="img.caption || img.date" loading="lazy" />
+          <figcaption v-if="img.caption">{{ img.caption }}</figcaption>
+        </figure>
       </div>
     </section>
 
@@ -83,21 +99,39 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
     <!-- Lightbox -->
     <Teleport to="body">
-      <div v-if="lightboxIndex >= 0 && currentImage" class="lightbox-overlay" @click.self="closeLightbox">
-        <button class="lightbox-close" type="button" aria-label="关闭" @click="closeLightbox">
-          <X :size="22" />
-        </button>
-        <button class="lightbox-nav lightbox-prev" type="button" aria-label="上一张" @click="prevImage">
-          <ChevronLeft :size="26" />
-        </button>
-        <img :src="currentImage.src" :alt="currentImage.caption || ''" />
-        <button class="lightbox-nav lightbox-next" type="button" aria-label="下一张" @click="nextImage">
-          <ChevronRight :size="26" />
-        </button>
-        <p v-if="currentImage.caption" style="color: rgba(255,255,255,0.7); text-align: center; margin-top: 12px; position: absolute; bottom: 28px;">
-          {{ currentImage.caption }}
-        </p>
-      </div>
+      <Transition name="lb-fade">
+        <div
+          v-if="lightboxOpen && currentImage"
+          class="lightbox"
+          @click.self="close"
+          @touchstart="onTouchStart"
+          @touchend="onTouchEnd"
+        >
+          <div class="lightbox-toolbar">
+            <span>{{ lightboxIndex + 1 }} / {{ album?.images.length }}</span>
+            <button @click="close" aria-label="关闭"><X :size="22" /></button>
+          </div>
+
+          <button class="lightbox-arrow lb-left" @click="prev" aria-label="上一张">
+            <ChevronLeft :size="28" />
+          </button>
+
+          <div class="lightbox-stage">
+            <Transition name="lb-slide" mode="out-in">
+              <img
+                :key="currentImage.src"
+                :src="currentImage.src"
+                :alt="currentImage.caption || ''"
+              />
+            </Transition>
+            <p v-if="currentImage.caption" class="lightbox-caption">{{ currentImage.caption }}</p>
+          </div>
+
+          <button class="lightbox-arrow lb-right" @click="next" aria-label="下一张">
+            <ChevronRight :size="28" />
+          </button>
+        </div>
+      </Transition>
     </Teleport>
   </main>
 </template>
