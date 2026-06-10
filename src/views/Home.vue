@@ -1,10 +1,12 @@
 <script setup>
-import { ArrowRight, ArrowUpRight, BookOpen, Feather, Heart, NotebookPen, Shapes } from 'lucide-vue-next'
+import { ArrowRight, ArrowUpRight, BookOpen, Clock3, Feather, Heart, NotebookPen, Shapes } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
 import { getPublishedPosts, getPublishedRecommendations } from '../services/contentService'
+import { moments } from '../data/moments'
 
 const posts = ref([])
 const recommendations = ref([])
+const latestMoments = computed(() => moments.slice(0, 4))
 
 const essayPosts = computed(() => posts.value.filter((post) => post.featured).slice(0, 4))
 const notePosts = computed(() => posts.value.filter((post) => ['研究', '生活', '前端'].includes(post.category)).slice(0, 5))
@@ -47,6 +49,7 @@ onMounted(async () => {
       </div>
     </section>
 
+    <div class="section-band">
     <section class="appleton-grid" aria-label="花园索引">
       <section class="garden-block essays-section">
         <RouterLink class="section-header-link" to="/posts">
@@ -125,6 +128,7 @@ onMounted(async () => {
         </div>
       </section>
     </section>
+    </div>
 
     <section class="now-ledger">
       <div>
@@ -140,5 +144,27 @@ onMounted(async () => {
         </RouterLink>
       </div>
     </section>
+
+    <div class="section-band">
+    <section class="now-ledger">
+      <div>
+        <p class="eyebrow">Recent Moments</p>
+        <h2>最近的说说。</h2>
+        <p>从QQ空间迁移过来的零散文字，每次回看都像翻旧信。</p>
+      </div>
+      <div class="recent-links">
+        <RouterLink v-for="item in latestMoments" :key="item.id" :to="'/moments'">
+          <span>{{ item.date }}</span>
+          <strong>{{ item.text.length > 40 ? item.text.slice(0, 40) + '...' : item.text }}</strong>
+          <ArrowUpRight :size="16" />
+        </RouterLink>
+        <RouterLink class="recent-more" to="/moments">
+          <span></span>
+          <strong>查看全部 114 条说说</strong>
+          <ArrowRight :size="16" />
+        </RouterLink>
+      </div>
+    </section>
+    </div>
   </main>
 </template>
