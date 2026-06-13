@@ -2384,7 +2384,7 @@ a, button {
   position: absolute;
   inset: 0;
   z-index: -3;
-  background-image: url("/images/fragments/letter-library.png");
+  background-image: url("/images/fragments/letter-library-violet.png");
   background-position: center;
   background-size: cover;
   transform: scale(1.015);
@@ -2401,9 +2401,9 @@ a, button {
 .fragments-hero::before {
   z-index: -2;
   background:
-    radial-gradient(circle at 50% 46%, rgba(255, 244, 212, 0.14), transparent 34%),
-    linear-gradient(90deg, rgba(20, 12, 25, 0.54), rgba(20, 12, 25, 0.12) 42%, rgba(20, 12, 25, 0.38)),
-    linear-gradient(180deg, rgba(20, 12, 25, 0.12), rgba(20, 12, 25, 0.48));
+    radial-gradient(circle at 48% 48%, rgba(255, 226, 170, 0.12), transparent 34%),
+    linear-gradient(90deg, rgba(20, 12, 25, 0.62), rgba(20, 12, 25, 0.12) 46%, rgba(20, 12, 25, 0.2) 72%, rgba(20, 12, 25, 0.44)),
+    linear-gradient(180deg, rgba(20, 12, 25, 0.08), rgba(20, 12, 25, 0.42));
 }
 
 .fragments-hero::after {
@@ -2416,7 +2416,7 @@ a, button {
 
 .fragments-hero-stage {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   display: grid;
   grid-template-columns: minmax(0, 0.88fr) minmax(360px, 0.62fr);
   gap: clamp(28px, 6vw, 78px);
@@ -2495,7 +2495,8 @@ a, button {
 .envelope-field {
   position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 1;
+  perspective: 1200px;
   pointer-events: none;
 }
 
@@ -2508,22 +2509,28 @@ a, button {
   border: 0;
   background: transparent;
   padding: 0;
-  opacity: 0.9;
+  opacity: 0.5;
   cursor: pointer;
   pointer-events: auto;
-  filter: drop-shadow(0 12px 18px rgba(24, 14, 20, 0.2));
+  filter: blur(0.55px) saturate(0.85) brightness(0.98) drop-shadow(0 14px 18px rgba(24, 14, 20, 0.18));
   animation: envelopeFall var(--duration) linear infinite;
   animation-delay: var(--delay);
 }
 
 .falling-envelope:nth-child(3n) {
-  opacity: 0.62;
-  filter: blur(0.2px) drop-shadow(0 10px 16px rgba(24, 14, 20, 0.16));
+  opacity: 0.28;
+  filter: blur(1.4px) saturate(0.75) brightness(0.9) drop-shadow(0 10px 16px rgba(24, 14, 20, 0.12));
 }
 
 .falling-envelope:nth-child(4n) {
   width: clamp(24px, 3.2vw, 48px);
-  opacity: 0.78;
+  opacity: 0.36;
+  filter: blur(1.8px) saturate(0.72) brightness(0.88) drop-shadow(0 10px 16px rgba(24, 14, 20, 0.1));
+}
+
+.falling-envelope:nth-child(5n) {
+  opacity: 0.64;
+  filter: blur(0.15px) saturate(0.9) brightness(1) drop-shadow(0 18px 24px rgba(24, 14, 20, 0.18));
 }
 
 .falling-envelope:hover {
@@ -2532,8 +2539,8 @@ a, button {
 }
 
 .falling-envelope:hover .envelope-shape {
-  box-shadow: 0 18px 34px rgba(255, 234, 212, 0.28);
-  transform: translateY(-8px) scale(1.08);
+  box-shadow: 0 18px 34px rgba(255, 234, 212, 0.18);
+  transform: translateY(-5px) rotateX(18deg) scale(1.04);
 }
 
 .envelope-shape {
@@ -2545,9 +2552,10 @@ a, button {
   border: 1px solid rgba(127, 70, 79, 0.16);
   border-radius: 4px;
   background:
-    linear-gradient(153deg, transparent 49%, rgba(167, 92, 97, 0.22) 50%, transparent 51%),
-    linear-gradient(27deg, transparent 49%, rgba(167, 92, 97, 0.18) 50%, transparent 51%),
-    linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(255, 231, 219, 0.92));
+    linear-gradient(153deg, transparent 49%, rgba(167, 92, 97, 0.16) 50%, transparent 51%),
+    linear-gradient(27deg, transparent 49%, rgba(167, 92, 97, 0.14) 50%, transparent 51%),
+    linear-gradient(180deg, rgba(255, 246, 234, 0.78), rgba(238, 202, 184, 0.62));
+  box-shadow: inset 0 10px 18px rgba(255, 255, 255, 0.12), inset 0 -8px 18px rgba(107, 48, 44, 0.08);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -2575,10 +2583,10 @@ a, button {
 
 @keyframes envelopeFall {
   from {
-    transform: translate3d(0, -18vh, 0) rotate(var(--rotation)) scale(var(--scale));
+    transform: translate3d(0, -18vh, -80px) rotateX(18deg) rotate(var(--rotation)) scale(var(--scale));
   }
   to {
-    transform: translate3d(var(--drift), 124vh, 0) rotate(calc(var(--rotation) + 270deg)) scale(var(--scale));
+    transform: translate3d(var(--drift), 124vh, 60px) rotateX(42deg) rotate(calc(var(--rotation) + 230deg)) scale(var(--scale));
   }
 }
 
@@ -2788,115 +2796,6 @@ a, button {
   transform: translateY(18px) rotate(1deg) scale(0.98);
 }
 
-.fragments-archive {
-  padding-top: 72px;
-}
-
-.fragments-archive-head {
-  display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(320px, 1fr);
-  gap: 24px;
-  align-items: end;
-}
-
-.fragments-archive-head h2 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(36px, 5vw, 58px);
-  font-weight: 400;
-}
-
-.fragments-archive-head p:last-child {
-  max-width: 520px;
-  margin: 12px 0 0;
-  color: var(--muted);
-  font-size: 17px;
-}
-
-.fragments-filter {
-  justify-content: flex-end;
-  margin-bottom: 0;
-}
-
-.fragments-count {
-  margin: 26px 0 18px;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 750;
-}
-
-.fragment-list {
-  display: grid;
-  gap: 12px;
-}
-
-.fragment-note button {
-  display: grid;
-  grid-template-columns: 28px minmax(0, 1fr) auto;
-  gap: 14px;
-  align-items: center;
-  width: 100%;
-  border: 1px solid rgba(224, 214, 189, 0.78);
-  border-radius: 8px;
-  background: rgba(255, 253, 246, 0.82);
-  box-shadow: 0 12px 28px rgba(58, 47, 26, 0.06);
-  color: var(--ink);
-  padding: 16px 18px;
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-}
-
-.fragment-note button:hover {
-  border-color: rgba(157, 63, 49, 0.35);
-  box-shadow: 0 16px 34px rgba(58, 47, 26, 0.1);
-  transform: translateY(-2px);
-}
-
-.fragment-note-icon {
-  display: grid;
-  width: 28px;
-  height: 28px;
-  place-items: center;
-  border: 1px solid rgba(63, 111, 91, 0.22);
-  border-radius: 50%;
-  color: var(--moss);
-}
-
-.fragment-note-copy {
-  display: grid;
-  gap: 5px;
-  min-width: 0;
-}
-
-.fragment-note-copy time {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: var(--moss);
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.fragment-note-copy strong {
-  color: var(--ink-soft);
-  font-family: var(--font-body);
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.55;
-  overflow-wrap: anywhere;
-}
-
-.fragment-note-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--clay);
-  font-size: 13px;
-  font-weight: 850;
-  white-space: nowrap;
-}
-
 @media (max-width: 980px) {
   .fragments-hero-stage {
     grid-template-columns: 1fr;
@@ -2907,14 +2806,6 @@ a, button {
   .letter-panel {
     justify-self: start;
     max-width: 620px;
-  }
-
-  .fragments-archive-head {
-    grid-template-columns: 1fr;
-  }
-
-  .fragments-filter {
-    justify-content: flex-start;
   }
 }
 
@@ -2954,13 +2845,6 @@ a, button {
     grid-template-columns: 1fr;
   }
 
-  .fragment-note button {
-    grid-template-columns: 24px minmax(0, 1fr);
-  }
-
-  .fragment-note-action {
-    grid-column: 2;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

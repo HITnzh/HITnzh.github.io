@@ -1,31 +1,22 @@
 <script setup>
-import { Calendar, Clock3, Mail, MailOpen, Shuffle, Sparkles, X } from 'lucide-vue-next'
+import { Mail, MailOpen, Shuffle, X } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { moments } from '../data/moments'
 
 const items = ref(moments)
-const activeYear = ref('all')
 const selectedMoment = ref(null)
 
 const envelopeSeed = [
-  ['6%', '-6s', '22s', '0.74', '12vw', '-16deg'],
-  ['12%', '-14s', '26s', '1.08', '-9vw', '12deg'],
-  ['18%', '-2s', '19s', '0.9', '8vw', '28deg'],
-  ['24%', '-20s', '31s', '0.64', '-14vw', '-8deg'],
-  ['31%', '-10s', '24s', '1.18', '10vw', '18deg'],
-  ['38%', '-4s', '28s', '0.82', '-7vw', '-28deg'],
-  ['44%', '-18s', '21s', '1.02', '15vw', '6deg'],
-  ['51%', '-8s', '30s', '0.7', '-12vw', '-20deg'],
-  ['58%', '-1s', '23s', '1.22', '9vw', '15deg'],
-  ['64%', '-16s', '27s', '0.86', '-10vw', '-12deg'],
-  ['70%', '-12s', '20s', '1', '13vw', '32deg'],
-  ['77%', '-5s', '29s', '0.68', '-8vw', '-24deg'],
-  ['83%', '-22s', '25s', '1.14', '7vw', '10deg'],
-  ['90%', '-9s', '32s', '0.8', '-14vw', '-18deg'],
-  ['96%', '-3s', '24s', '1.28', '-18vw', '22deg'],
-  ['3%', '-18s', '34s', '1.3', '20vw', '8deg'],
-  ['36%', '-24s', '35s', '0.58', '16vw', '-34deg'],
-  ['67%', '-27s', '36s', '0.54', '-17vw', '35deg'],
+  ['8%', '-6s', '30s', '0.54', '10vw', '-16deg'],
+  ['16%', '-14s', '34s', '0.82', '-8vw', '12deg'],
+  ['24%', '-2s', '28s', '0.66', '7vw', '28deg'],
+  ['34%', '-20s', '38s', '0.48', '-12vw', '-8deg'],
+  ['44%', '-10s', '32s', '0.76', '9vw', '18deg'],
+  ['55%', '-4s', '36s', '0.58', '-7vw', '-28deg'],
+  ['64%', '-18s', '31s', '0.72', '12vw', '6deg'],
+  ['73%', '-8s', '39s', '0.5', '-10vw', '-20deg'],
+  ['82%', '-1s', '29s', '0.88', '8vw', '15deg'],
+  ['92%', '-16s', '35s', '0.62', '-12vw', '-12deg'],
 ]
 
 const envelopes = envelopeSeed.map(([left, delay, duration, scale, drift, rotation], index) => ({
@@ -41,16 +32,6 @@ const envelopes = envelopeSeed.map(([left, delay, duration, scale, drift, rotati
 }))
 
 const readableItems = computed(() => items.value.filter((item) => item.text?.trim()))
-
-const years = computed(() => {
-  const ys = [...new Set(items.value.map((item) => item.date.slice(0, 4)))]
-  return ys.sort((a, b) => b.localeCompare(a))
-})
-
-const filteredItems = computed(() => {
-  if (activeYear.value === 'all') return items.value
-  return items.value.filter((item) => item.date.startsWith(activeYear.value))
-})
 
 function pickRandomMoment() {
   const source = readableItems.value
@@ -68,10 +49,6 @@ function openRandomLetter() {
   selectedMoment.value = pickRandomMoment()
 }
 
-function openLetter(item) {
-  selectedMoment.value = item
-}
-
 function closeLetter() {
   selectedMoment.value = null
 }
@@ -84,10 +61,6 @@ function isoTimestamp(item) {
   return `${item.date}T${item.time || '00:00:00'}`
 }
 
-function shortPreview(text) {
-  const normalized = text.replace(/\s+/g, ' ').trim()
-  return normalized.length > 86 ? `${normalized.slice(0, 86)}...` : normalized
-}
 </script>
 
 <template>
@@ -175,53 +148,6 @@ function shortPreview(text) {
             <p>每次都会随机抽出一则原来的说说，按信笺样式展开，并保留完整时间戳。</p>
           </aside>
         </Transition>
-      </div>
-    </section>
-
-    <section class="section-wrap fragments-archive">
-      <div class="fragments-archive-head">
-        <div>
-          <p class="eyebrow">Archive</p>
-          <h2>全部碎笔</h2>
-          <p>随机拆信之外，也可以按年份慢慢翻回去。</p>
-        </div>
-        <div class="moments-filter fragments-filter" aria-label="碎笔年份">
-          <button
-            v-for="year in ['all', ...years]"
-            :key="year"
-            type="button"
-            :class="{ active: activeYear === year }"
-            @click="activeYear = year"
-          >
-            {{ year === 'all' ? '全部' : year }}
-          </button>
-        </div>
-      </div>
-
-      <div class="fragments-count">{{ filteredItems.length }} 则碎笔</div>
-
-      <div class="fragment-list">
-        <article v-for="item in filteredItems" :key="item.id" class="fragment-note">
-          <button type="button" @click="openLetter(item)">
-            <span class="fragment-note-icon" aria-hidden="true"><Sparkles v-if="item.images?.length" :size="13" /></span>
-            <span class="fragment-note-copy">
-              <time :datetime="isoTimestamp(item)">
-                <Calendar :size="13" />
-                {{ fullTimestamp(item) }}
-              </time>
-              <strong>{{ shortPreview(item.text) }}</strong>
-            </span>
-            <span class="fragment-note-action">
-              <Clock3 :size="13" />
-              展开成信
-            </span>
-          </button>
-        </article>
-      </div>
-
-      <div v-if="filteredItems.length === 0" class="empty-state">
-        <h2>没有匹配的碎笔</h2>
-        <p>换个年份试试。</p>
       </div>
     </section>
   </main>
