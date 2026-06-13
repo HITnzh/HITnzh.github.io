@@ -4,7 +4,7 @@ import { ArrowUpRight, Github, Mail } from 'lucide-vue-next'
 const footerLinks = [
   { label: '文章', to: '/posts' },
   { label: '安利', to: '/recommendations' },
-  { label: '说说', to: '/moments' },
+  { label: '碎笔', to: '/fragments' },
   { label: '相册', to: '/gallery' },
   { label: '归档', to: '/archive' },
   { label: '项目', to: '/projects' },

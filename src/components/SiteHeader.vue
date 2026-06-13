@@ -17,7 +17,7 @@ let stopSessionWatch = () => {}
 const links = [
   { label: '文章', to: '/posts' },
   { label: '安利', to: '/recommendations' },
-  { label: '说说', to: '/moments' },
+  { label: '碎笔', to: '/fragments' },
   { label: '相册', to: '/gallery' },
   { label: '关于', to: '/about' },
 ]

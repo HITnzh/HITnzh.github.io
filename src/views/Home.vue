@@ -148,19 +148,19 @@ onMounted(async () => {
     <div class="section-band">
     <section class="now-ledger">
       <div>
-        <p class="eyebrow">Recent Moments</p>
-        <h2>最近的说说。</h2>
-        <p>从QQ空间迁移过来的零散文字，每次回看都像翻旧信。</p>
+        <p class="eyebrow">Recent Fragments</p>
+        <h2>最近碎笔。</h2>
+        <p>从旧时间线迁移过来的零散文字，每次回看都像翻旧信。</p>
       </div>
       <div class="recent-links">
-        <RouterLink v-for="item in latestMoments" :key="item.id" :to="'/moments'">
+        <RouterLink v-for="item in latestMoments" :key="item.id" :to="'/fragments'">
           <span>{{ item.date }}</span>
           <strong>{{ item.text.length > 40 ? item.text.slice(0, 40) + '...' : item.text }}</strong>
           <ArrowUpRight :size="16" />
         </RouterLink>
-        <RouterLink class="recent-more" to="/moments">
+        <RouterLink class="recent-more" to="/fragments">
           <span></span>
-          <strong>查看全部 114 条说说</strong>
+          <strong>查看全部 114 则碎笔</strong>
           <ArrowRight :size="16" />
         </RouterLink>
       </div>

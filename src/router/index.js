@@ -54,9 +54,13 @@ const routes = [
     component: Projects,
   },
   {
-    path: '/moments',
-    name: 'moments',
+    path: '/fragments',
+    name: 'fragments',
     component: Moments,
+  },
+  {
+    path: '/moments',
+    redirect: '/fragments',
   },
   {
     path: '/gallery',
