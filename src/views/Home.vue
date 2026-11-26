@@ -1,170 +1,125 @@
 <script setup>
-import { ArrowRight, ArrowUpRight, BookOpen, Clock3, Feather, Heart, NotebookPen, Shapes } from 'lucide-vue-next'
+import { ArrowRight, ArrowUpRight, BookOpen, BookOpenText, Clapperboard, Disc3, Feather, Library, PenLine } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
-import { getPublishedPosts, getPublishedRecommendations } from '../services/contentService'
+import GardenCover from '../components/GardenCover.vue'
 import { moments } from '../data/moments'
+import { getPublishedPosts, getPublishedRecommendations } from '../services/contentService'
 
 const posts = ref([])
 const recommendations = ref([])
-const latestMoments = computed(() => moments.slice(0, 4))
+const loading = ref(true)
+const activeView = ref('精选')
+const views = ['精选', '最新', '研究与日常', '技术专栏']
+const recentMoments = [...moments].sort((a, b) => b.dateTime.localeCompare(a.dateTime)).slice(0, 4)
+const momentIndex = ref(0)
+const currentMoment = computed(() => recentMoments[momentIndex.value])
+const shelfIcons = { 番剧: Clapperboard, 书籍: BookOpen, 专辑: Disc3 }
 
-const essayPosts = computed(() => posts.value.filter((post) => post.featured).slice(0, 4))
-const notePosts = computed(() => posts.value.filter((post) => ['研究', '生活', '前端'].includes(post.category)).slice(0, 5))
-const columnPosts = computed(() => {
-  const focusedPosts = posts.value.filter((post) => ['技术', '工程', '项目', '前端'].includes(post.category))
-  return (focusedPosts.length ? focusedPosts : posts.value).slice(0, 8)
+const visiblePosts = computed(() => {
+  const all = posts.value
+  switch (activeView.value) {
+    case '精选': return all.filter(post => post.featured).slice(0, 4)
+    case '研究与日常': return all.filter(post => ['研究', '生活', '前端'].includes(post.category)).slice(0, 5)
+    case '技术专栏': return all.filter(post => ['技术', '工程', '项目', '前端'].includes(post.category)).slice(0, 8)
+    default: return all.slice(0, 4)
+  }
 })
-const latestPosts = computed(() => posts.value.slice(0, 4))
-
-const gardenStats = computed(() => [
-  { label: 'Essays', value: posts.value.length, text: '文章和长笔记', to: '/posts' },
-  { label: 'Recs', value: recommendations.value.length, text: '番剧、书籍、专辑', to: '/recommendations' },
-  { label: 'Notes', value: notePosts.value.length, text: '研究和日常记录', to: '/posts' },
-])
 
 onMounted(async () => {
-  const [postData, recommendationData] = await Promise.all([getPublishedPosts(), getPublishedRecommendations()])
-  posts.value = postData
-  recommendations.value = recommendationData.slice(0, 6)
+  const [articles, picks] = await Promise.all([getPublishedPosts(), getPublishedRecommendations()])
+  posts.value = articles
+  recommendations.value = picks
+  if (!articles.some(post => post.featured)) activeView.value = '最新'
+  loading.value = false
 })
 </script>
 
 <template>
-  <main class="garden-home">
-    <section class="appleton-hero">
-      <p class="eyebrow">HITnzh's digital garden</p>
-      <h1>Visual notes on technology, signals, projects, and ordinary life.</h1>
-      <p>
-        <span>这里整理的是技术学习、研究笔记、</span>
-        <span>项目复盘和一些生活片段。</span>
-        <span>它会像花园一样慢慢长大：</span>
-        <span>文章会被修订，想法会互相连接。</span>
-      </p>
-      <div class="garden-stats" aria-label="内容概览">
-        <RouterLink v-for="item in gardenStats" :key="item.label" :to="item.to">
-          <strong>{{ item.value }}</strong>
-          <span>{{ item.label }}</span>
-          <em>{{ item.text }}</em>
-        </RouterLink>
-      </div>
-    </section>
-
-    <div class="section-band">
-    <section class="appleton-grid" aria-label="花园索引">
-      <section class="garden-block essays-section">
-        <RouterLink class="section-header-link" to="/posts">
-          <h2><Feather :size="21" /> Essays <ArrowRight :size="18" /></h2>
-        </RouterLink>
-        <p class="subheader">Longer pieces on building, learning, and making technical things readable.</p>
-        <div class="essay-card-grid">
-          <RouterLink v-for="post in essayPosts" :key="post.slug" class="essay-tile" :to="`/posts/${post.slug}`">
-            <img :src="post.cover" :alt="post.title" loading="lazy" />
-            <span>{{ post.category }} · {{ post.readTime }}</span>
-            <h3>{{ post.title }}</h3>
-            <p>{{ post.excerpt }}</p>
-          </RouterLink>
+  <main class="journal-home">
+    <div class="journal-wrap">
+      <section class="journal-hero" aria-labelledby="journal-title">
+        <div class="hero-copy">
+          <p class="byline" lang="en">Field notes by HITnzh</p>
+          <h1 id="journal-title" lang="en">Digital <em>Garden.</em></h1>
+          <p class="intro">在这里写信号处理、前端和做项目的心得，<br class="wide-break" />也收下喜欢的作品与日常的只言片语。</p>
+          <div class="hero-actions">
+            <RouterLink class="primary-link" to="/posts">阅读文章 <ArrowRight :size="16" /></RouterLink>
+            <RouterLink class="quiet-link" to="/about">关于我 <ArrowUpRight :size="15" /></RouterLink>
+          </div>
         </div>
+        <GardenCover />
       </section>
 
-      <section class="garden-block notes-section">
-        <RouterLink class="section-header-link" to="/posts">
-          <h2><NotebookPen :size="21" /> Notes <ArrowRight :size="18" /></h2>
-        </RouterLink>
-        <p class="subheader">Shorter field notes, research fragments, and ideas still under revision.</p>
-        <div class="note-list">
-          <RouterLink v-for="post in notePosts" :key="post.slug" :to="`/posts/${post.slug}`" class="note-row">
-            <BookOpen :size="18" />
-            <span>{{ post.title }}</span>
-          </RouterLink>
-        </div>
-      </section>
+      <div class="reading-desk">
+        <section class="writing" aria-labelledby="writing-title">
+          <header class="section-title">
+            <h2 id="writing-title"><BookOpenText aria-hidden="true" />文章手记</h2>
+            <RouterLink class="text-link" to="/posts">全部文章<template v-if="!loading"> · {{ posts.length }}</template> <ArrowUpRight :size="14" /></RouterLink>
+          </header>
+          <div class="view-switch" role="group" aria-label="选择文章栏目">
+            <button v-for="view in views" :key="view" type="button" :aria-pressed="activeView === view" @click="activeView = view">{{ view }}</button>
+          </div>
+          <p v-if="loading" class="list-status" role="status">正在读取文章…</p>
+          <div v-else-if="visiblePosts.length" class="entries">
+            <article v-for="post in visiblePosts" :key="post.slug">
+              <RouterLink class="entry" :to="`/posts/${post.slug}`">
+                <span class="entry-art"><img :src="post.cover" alt="" loading="lazy" /></span>
+                <div class="entry-copy">
+                  <p class="entry-meta">
+                    <span>{{ post.category }}</span><i aria-hidden="true">/</i>
+                    <time :datetime="post.date">{{ post.date }}</time>
+                    <template v-if="post.readTime"><i aria-hidden="true">·</i>{{ post.readTime }}</template>
+                  </p>
+                  <h3>{{ post.title }}</h3>
+                  <p class="entry-excerpt">{{ post.excerpt }}</p>
+                </div>
+                <ArrowUpRight class="entry-arrow" :size="17" aria-hidden="true" />
+              </RouterLink>
+            </article>
+          </div>
+          <p v-else class="list-status">这个栏目还没有文章。</p>
+        </section>
 
-      <section class="garden-block columns-section">
-        <RouterLink class="section-header-link" to="/posts?category=技术">
-          <h2><Shapes :size="21" /> 专栏文章 <ArrowRight :size="18" /></h2>
-        </RouterLink>
-        <p class="subheader">按主题沉淀下来的文章和系列笔记，偏技术、工程实践和项目复盘。</p>
-        <div class="column-list">
-          <RouterLink v-for="post in columnPosts" :key="post.slug" :to="`/posts/${post.slug}`" class="column-row">
-            <span class="column-mark" aria-hidden="true"></span>
-            <span class="column-copy">
-              <em>{{ post.category }} · {{ post.readTime }}</em>
-              <strong>{{ post.title }}</strong>
-              <small>{{ post.excerpt }}</small>
-            </span>
-          </RouterLink>
-        </div>
-      </section>
-
-      <section class="garden-block recommend-section">
-        <RouterLink class="section-header-link" to="/recommendations">
-          <h2><Heart :size="21" /> 安利区 <ArrowRight :size="18" /></h2>
-        </RouterLink>
-        <p class="subheader">一些私心推荐：番剧、书籍、专辑，以及那些值得反复回来的东西。</p>
-        <div class="recommend-grid">
-          <RouterLink
-            v-for="item in recommendations"
-            :key="`${item.type}-${item.title}`"
-            class="recommend-card"
-            :to="`/recommendations/${item.slug}`"
-          >
-            <div class="recommend-cover" :class="[{ 'has-image': item.cover }, `tone-${item.tone}`]">
-              <span class="recommend-badge">{{ item.type }}</span>
-              <img
-                v-if="item.cover"
-                :src="item.cover"
-                :alt="`${item.title} 封面`"
-                loading="lazy"
-              />
-              <template v-else>
-                <strong>{{ item.title }}</strong>
-                <em>{{ item.creator }}</em>
-              </template>
+        <aside class="margin-notes" aria-label="花园札记">
+          <section v-if="currentMoment" class="fragment" aria-labelledby="fragment-title">
+            <header class="fragment-heading"><Feather :size="17" aria-hidden="true" /><h2 id="fragment-title">最近碎笔</h2></header>
+            <span class="quote-mark" aria-hidden="true">“</span>
+            <figure class="fragment-quote" aria-live="polite">
+              <blockquote>{{ currentMoment.text }}</blockquote>
+              <figcaption><span aria-hidden="true"></span><time :datetime="currentMoment.date">{{ currentMoment.date.replaceAll('-', '.') }}</time></figcaption>
+            </figure>
+            <div class="fragment-links">
+              <RouterLink class="text-link" to="/fragments">全部 {{ moments.length }} 则 <ArrowUpRight :size="14" /></RouterLink>
+              <button v-if="recentMoments.length > 1" class="next-fragment" type="button" @click="momentIndex = (momentIndex + 1) % recentMoments.length">换一则 <ArrowRight :size="14" /></button>
             </div>
-            <strong>{{ item.title }}</strong>
-            <em>{{ item.creator }}</em>
+          </section>
+          <section class="now" aria-labelledby="now-title">
+            <h2 id="now-title"><PenLine :size="15" />近况</h2>
+            <p>最近在整理博客的写作流程，让改稿、配图和发布都更顺手。</p>
+            <RouterLink class="text-link" :to="{ path: '/posts', query: { category: '技术' } }">技术文章 <ArrowUpRight :size="14" /></RouterLink>
+          </section>
+        </aside>
+      </div>
+
+      <section class="shelf" aria-labelledby="shelf-title">
+        <header class="section-title">
+          <h2 id="shelf-title"><Library aria-hidden="true" />私心推荐</h2>
+          <RouterLink class="text-link" to="/recommendations">全部安利<template v-if="!loading"> · {{ recommendations.length }}</template> <ArrowUpRight :size="14" /></RouterLink>
+        </header>
+        <p v-if="loading" class="list-status" role="status">正在读取安利…</p>
+        <div v-else-if="recommendations.length" class="shelf-grid">
+          <RouterLink v-for="item in recommendations.slice(0, 6)" :key="item.slug" class="shelf-item" :to="`/recommendations/${item.slug}`">
+            <span class="shelf-meta"><component :is="shelfIcons[item.type] || BookOpen" :size="15" />{{ item.type }}</span>
+            <img v-if="item.cover" class="shelf-cover" :src="item.cover" alt="" loading="lazy" />
+            <h3>{{ item.title }}</h3>
+            <span class="creator">{{ item.creator }}</span>
             <p>{{ item.note }}</p>
           </RouterLink>
         </div>
+        <p v-else class="list-status">书架上还没有公开的推荐。</p>
       </section>
-    </section>
-    </div>
-
-    <section class="now-ledger">
-      <div>
-        <p class="eyebrow">Now</p>
-        <h2>正在把博客从“展示页面”改成真正能长期写作的系统。</h2>
-        <p>前台负责阅读体验，Supabase 负责文章、图片和登录。接下来会继续补 Markdown 编辑、标签和项目管理。</p>
-      </div>
-      <div class="recent-links">
-        <RouterLink v-for="post in latestPosts" :key="post.slug" :to="`/posts/${post.slug}`">
-          <span>{{ post.date }}</span>
-          <strong>{{ post.title }}</strong>
-          <ArrowUpRight :size="16" />
-        </RouterLink>
-      </div>
-    </section>
-
-    <div class="section-band">
-    <section class="now-ledger">
-      <div>
-        <p class="eyebrow">Recent Fragments</p>
-        <h2>最近碎笔。</h2>
-        <p>从旧时间线迁移过来的零散文字，每次回看都像翻旧信。</p>
-      </div>
-      <div class="recent-links">
-        <RouterLink v-for="item in latestMoments" :key="item.id" :to="'/fragments'">
-          <span>{{ item.date }}</span>
-          <strong>{{ item.text.length > 40 ? item.text.slice(0, 40) + '...' : item.text }}</strong>
-          <ArrowUpRight :size="16" />
-        </RouterLink>
-        <RouterLink class="recent-more" to="/fragments">
-          <span></span>
-          <strong>查看全部 114 则碎笔</strong>
-          <ArrowRight :size="16" />
-        </RouterLink>
-      </div>
-    </section>
     </div>
   </main>
 </template>
+
+<style scoped src="../styles/journal.css"></style>

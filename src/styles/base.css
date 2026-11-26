@@ -241,7 +241,6 @@ button {
   transform: translateY(-8px);
 }
 
-.garden-home,
 .page-shell,
 .article-page {
   min-height: 70vh;
@@ -249,7 +248,6 @@ button {
 }
 
 /* Content area soft top-light accent */
-.garden-home::before,
 .page-shell::before {
   content: '';
   position: absolute;
@@ -263,163 +261,9 @@ button {
   z-index: 0;
 }
 
-.garden-home > *,
 .page-shell > * {
   position: relative;
   z-index: 1;
-}
-
-.appleton-hero {
-  width: min(1420px, calc(100% - 56px));
-  margin: 0 auto;
-  padding: 74px 0 36px;
-}
-
-.appleton-hero h1 {
-  max-width: 1080px;
-  margin: 18px 0 0;
-  font-family: var(--font-display);
-  font-size: 74px;
-  font-weight: 400;
-  line-height: 1.04;
-  letter-spacing: 0;
-}
-
-.appleton-hero > p {
-  display: grid;
-  gap: 4px;
-  max-width: 780px;
-  margin: 24px 0 0;
-  color: var(--ink-soft);
-  font-size: 21px;
-  font-weight: 300;
-  line-height: 1.72;
-}
-
-.garden-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin-top: 34px;
-}
-
-.garden-stats a {
-  display: grid;
-  min-width: 172px;
-  border-left: 2px solid var(--line);
-  padding: 4px 18px 6px 14px;
-}
-
-.garden-stats a:hover {
-  border-color: var(--clay);
-}
-
-.garden-stats strong {
-  font-family: var(--font-display);
-  font-size: 34px;
-  font-weight: 400;
-  line-height: 1;
-}
-
-.garden-stats span {
-  color: var(--moss);
-  font-weight: 750;
-}
-
-.garden-stats em {
-  color: var(--muted);
-  font-size: 13px;
-  font-style: normal;
-}
-
-.appleton-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-template-areas:
-    "essays essays notes"
-    "patterns library library";
-  gap: 48px 44px;
-  width: min(1420px, calc(100% - 56px));
-  margin: 20px auto 0;
-  padding: 24px 0 58px;
-}
-
-.garden-block {
-  min-width: 0;
-}
-
-.essays-section {
-  grid-area: essays;
-}
-
-.notes-section {
-  grid-area: notes;
-}
-
-.columns-section {
-  grid-area: patterns;
-}
-
-.recommend-section {
-  grid-area: library;
-}
-
-.section-header-link h2 {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  color: var(--ink);
-  font-family: Inter, "Noto Sans SC", system-ui, sans-serif;
-  font-size: 18px;
-  font-weight: 650;
-  line-height: 1.2;
-}
-
-.section-header-link h2 svg:last-child {
-  color: var(--clay);
-  transition: transform 0.2s ease;
-}
-
-.section-header-link:hover h2 {
-  color: var(--clay);
-}
-
-.section-header-link:hover h2 svg:last-child {
-  transform: translateX(4px);
-}
-
-.subheader {
-  max-width: 680px;
-  margin: 8px 0 20px;
-  color: var(--muted);
-  font-size: 17px;
-  font-weight: 300;
-  line-height: 1.7;
-}
-
-.essay-card-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.essay-tile {
-  display: grid;
-  align-content: start;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: rgba(255, 253, 246, 0.9);
-  padding: 16px;
-  box-shadow: 0 8px 22px rgba(58, 47, 26, 0.06);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.essay-tile:hover,
-.column-row:hover {
-  border-color: rgba(157, 63, 49, 0.45);
-  box-shadow: 0 12px 28px rgba(58, 47, 26, 0.1);
-  transform: scale3d(1.01, 1.01, 1);
 }
 
 .recommend-card:hover .recommend-cover {
@@ -427,23 +271,6 @@ button {
   transform: translateY(-4px);
 }
 
-.essay-tile img {
-  aspect-ratio: 16 / 9;
-  width: 100%;
-  border: 1px solid rgba(224, 214, 189, 0.72);
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.essay-tile span {
-  margin-top: 10px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.essay-tile h3,
-.column-copy strong,
 .recommend-card > strong {
   margin: 6px 0;
   font-family: var(--font-body);
@@ -453,7 +280,6 @@ button {
   overflow-wrap: anywhere;
 }
 
-.essay-tile p,
 .recommend-card p {
   margin: 0;
   color: var(--muted);
@@ -462,94 +288,11 @@ button {
   overflow-wrap: anywhere;
 }
 
-.note-list,
-.column-list {
-  display: grid;
-}
-
-.note-row {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 12px;
-  align-items: start;
-  border-bottom: 1px solid var(--line);
-  padding: 14px 0;
-  color: var(--ink-soft);
-  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-
-.note-row svg {
-  position: relative;
-  top: 4px;
-  color: var(--moss);
-}
-
-.note-row:hover {
-  border-color: var(--blue);
-  color: var(--clay);
-  transform: translateX(3px);
-}
-
-.column-list {
-  gap: 2px;
-}
-
-.column-row {
-  display: grid;
-  grid-template-columns: 22px minmax(0, 1fr);
-  gap: 14px;
-  align-items: start;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  padding: 13px 12px 14px 0;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.column-mark {
-  position: relative;
-  top: 7px;
-  display: block;
-  width: 15px;
-  height: 15px;
-  border: 1.5px solid #36b6c9;
-  border-radius: 50%;
-  transform: rotate(45deg);
-}
-
-.column-mark::after {
-  content: "";
-  position: absolute;
-  inset: 3px;
-  border-top: 1.5px solid #36b6c9;
-  border-left: 1.5px solid #36b6c9;
-}
-
-.column-copy {
-  display: grid;
-  min-width: 0;
-  gap: 3px;
-}
-
-.column-copy em,
 .recommend-badge {
   color: var(--moss);
   font-size: 13px;
   font-style: normal;
   font-weight: 700;
-}
-
-.column-copy small {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.55;
-  overflow-wrap: anywhere;
-}
-
-.recommend-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 28px 20px;
-  align-items: start;
 }
 
 .recommend-index-grid {
@@ -770,64 +513,6 @@ button {
   gap: 12px;
 }
 
-.now-ledger {
-  display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(320px, 1fr);
-  gap: 46px;
-  width: min(1420px, calc(100% - 56px));
-  margin: 0 auto 74px;
-  border-top: 1px solid var(--line);
-  padding-top: 42px;
-}
-
-.section-band .now-ledger {
-  border-top: 0;
-}
-
-.now-ledger h2 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 36px;
-  font-weight: 400;
-  line-height: 1.18;
-}
-
-.now-ledger p {
-  color: var(--muted);
-}
-
-.recent-links {
-  display: grid;
-}
-
-.recent-links a {
-  display: grid;
-  grid-template-columns: 118px 1fr auto;
-  gap: 16px;
-  align-items: center;
-  border-bottom: 1px solid var(--line);
-  padding: 14px 0;
-}
-
-.recent-links a:hover strong {
-  color: var(--clay);
-}
-
-.recent-more {
-  color: var(--moss) !important;
-  font-weight: 700;
-}
-
-.recent-links span {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.recent-links strong {
-  font-family: var(--font-body);
-  font-weight: 400;
-}
-
 .garden-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.62fr);
@@ -917,31 +602,6 @@ button {
   width: min(1180px, calc(100% - 36px));
   margin: 0 auto;
   padding: 54px 0;
-}
-
-.section-band {
-  position: relative;
-  border-block: 1px solid rgba(216, 210, 189, 0.55);
-  background:
-    linear-gradient(175deg,
-      rgba(240, 237, 224, 0.85) 0%,
-      rgba(232, 235, 222, 0.9) 30%,
-      rgba(245, 242, 230, 0.8) 60%,
-      rgba(238, 233, 220, 0.88) 100%
-    );
-  box-shadow:
-    inset 0 1px 0 rgba(255, 253, 247, 0.6),
-    inset 0 -1px 0 rgba(200, 190, 170, 0.15);
-}
-
-.section-band::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 60% 50% at 30% 50%, rgba(210, 200, 225, 0.1), transparent),
-    radial-gradient(ellipse 40% 40% at 75% 50%, rgba(220, 210, 190, 0.12), transparent);
 }
 
 .section-heading {
@@ -2037,22 +1697,18 @@ a, button {
 }
 
 /* Card hover lift */
-.essay-tile:hover,
-.column-row:hover,
 .gallery-card-v2:hover,
 .tl-card:hover {
   transform: translateY(-3px);
 }
 
 /* Image subtle zoom on hover */
-.essay-tile img,
 .recommend-cover img,
 .album-photo img,
 .tl-images img {
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.essay-tile:hover img,
 .recommend-card:hover .recommend-cover img,
 .album-photo:hover img,
 .timeline-item:hover .tl-images img {
@@ -2060,8 +1716,6 @@ a, button {
 }
 
 /* Scroll reveal base */
-.garden-block,
-.now-ledger,
 .page-hero,
 .article-header,
 .album-header {
@@ -3231,7 +2885,6 @@ a, button {
   }
 
   .garden-hero,
-  .now-ledger,
   .recommend-detail-hero,
   .recommend-detail-grid,
   .featured-grid,
@@ -3274,25 +2927,6 @@ a, button {
 
   .category-tabs {
     justify-content: flex-start;
-  }
-
-  .appleton-hero,
-  .appleton-grid,
-  .now-ledger {
-    width: min(900px, calc(100% - 40px));
-  }
-
-  .appleton-hero h1 {
-    font-size: 58px;
-  }
-
-  .appleton-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas:
-      "essays essays"
-      "notes patterns"
-      "library library";
-    gap: 34px 28px;
   }
 
   .moments-hero-inner {
@@ -3378,59 +3012,6 @@ a, button {
     padding-top: 48px;
   }
 
-  .appleton-hero {
-    width: calc(100vw - 36px);
-    padding: 42px 0 22px;
-  }
-
-  .appleton-hero h1 {
-    font-size: 38px;
-    line-height: 1.08;
-  }
-
-  .appleton-hero > p {
-    max-width: calc(100vw - 36px);
-    font-size: 18px;
-    word-break: break-all;
-    overflow-wrap: anywhere;
-  }
-
-  .appleton-hero > p span {
-    display: block;
-    max-width: 100%;
-    word-break: break-all;
-    overflow-wrap: anywhere;
-  }
-
-  .garden-stats {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .garden-stats a {
-    min-width: 0;
-  }
-
-  .appleton-grid {
-    width: calc(100vw - 36px);
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "essays"
-      "notes"
-      "patterns"
-      "library";
-    gap: 34px;
-  }
-
-  .essay-card-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .recommend-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px 16px;
-  }
-
   .recommend-index-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 28px 16px;
@@ -3438,12 +3019,6 @@ a, button {
 
   .recommend-cover {
     padding: 12px;
-  }
-
-  .now-ledger {
-    width: calc(100vw - 36px);
-    grid-template-columns: 1fr;
-    gap: 22px;
   }
 
   .recommend-detail-hero,
@@ -3456,22 +3031,8 @@ a, button {
     font-size: 42px;
   }
 
-  .recommend-grid,
   .recommend-index-grid {
     grid-template-columns: 1fr;
-  }
-
-  .now-ledger h2 {
-    font-size: 28px;
-  }
-
-  .recent-links a {
-    grid-template-columns: 1fr auto;
-    gap: 4px 12px;
-  }
-
-  .recent-links span {
-    grid-column: 1 / -1;
   }
 
   .garden-hero h1,
