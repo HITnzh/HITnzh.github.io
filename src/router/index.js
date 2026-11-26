@@ -10,7 +10,8 @@ import AdminPosts from '../views/AdminPosts.vue'
 import AdminRecommendationEditor from '../views/AdminRecommendationEditor.vue'
 import AdminRecommendations from '../views/AdminRecommendations.vue'
 import Archive from '../views/Archive.vue'
-import Home from '../views/Home.vue'
+import Garden from '../views/Garden.vue'
+import ResearchProfile from '../views/ResearchProfile.vue'
 import PostDetail from '../views/PostDetail.vue'
 import Posts from '../views/Posts.vue'
 import Projects from '../views/Projects.vue'
@@ -21,7 +22,12 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home,
+    component: ResearchProfile,
+  },
+  {
+    path: '/garden',
+    name: 'garden',
+    component: Garden,
   },
   {
     path: '/posts',
@@ -126,9 +132,14 @@ const routes = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
-  scrollBehavior() {
+  scrollBehavior(to) {
+    if (to.name === 'home' && to.hash) return { el: to.hash, top: 80 }
     return { top: 0 }
   },
+})
+
+router.afterEach((to) => {
+  document.title = to.name === 'home' ? 'HITnzh · 个人研究主页' : 'HITnzh Blog'
 })
 
 export default router

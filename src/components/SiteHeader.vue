@@ -4,7 +4,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { getBackendStatus, getSession, onSessionChange } from '../services/adminService'
 
-defineProps({ home: Boolean, scrolled: Boolean })
+defineProps({ research: Boolean, garden: Boolean, scrolled: Boolean })
 
 const route = useRoute()
 const router = useRouter()
@@ -25,6 +25,12 @@ const links = [
   { label: '碎笔', to: '/fragments' },
   { label: '相册', to: '/gallery' },
   { label: '关于', to: '/about' },
+]
+
+const researchSections = [
+  { label: '研究方向', hash: '#research' },
+  { label: '近期动态', hash: '#activity' },
+  { label: '站点索引', hash: '#directory' },
 ]
 
 const menuIcon = computed(() => (isOpen.value ? X : Menu))
@@ -88,22 +94,31 @@ function closePanels() {
 </script>
 
 <template>
-  <header class="site-header" :class="{ scrolled, 'journal-header': home }" @keydown.esc="closePanels">
+  <header class="site-header" :class="{ scrolled, 'reading-header': garden || research, 'journal-header': garden, 'research-header': research }" @keydown.esc="closePanels">
     <div class="header-inner">
       <RouterLink class="brand" to="/" aria-label="HITnzh 首页" @click="closePanels">
-        <span class="brand-mark">
-          <Sprout v-if="home" :size="22" :stroke-width="1.5" aria-hidden="true" />
+        <span v-if="!research" class="brand-mark">
+          <Sprout v-if="garden" :size="22" :stroke-width="1.5" aria-hidden="true" />
           <template v-else>H</template>
         </span>
         <span class="brand-text">HITnzh</span>
-        <span v-if="home" class="brand-note">个人手记</span>
+        <span v-if="garden" class="brand-note">个人手记</span>
+        <template v-if="research">
+          <span class="research-slash" aria-hidden="true">/</span>
+          <span class="research-label" lang="en">Research</span>
+        </template>
       </RouterLink>
 
       <nav id="site-navigation" ref="navigation" class="nav-links" :class="{ open: isOpen }" aria-label="主导航" @click="isOpen && closePanels()">
-        <RouterLink v-if="home" to="/">首页</RouterLink>
-        <RouterLink v-for="link in links" :key="link.to" :to="link.to">
-          {{ link.label }}
-        </RouterLink>
+        <template v-if="research">
+          <RouterLink v-for="section in researchSections" :key="section.hash" v-slot="{ href, navigate }" :to="{ path: '/', hash: section.hash }" custom>
+            <a :href="href" :aria-current="route.hash === section.hash ? 'location' : undefined" @click="navigate">{{ section.label }}</a>
+          </RouterLink>
+        </template>
+        <template v-else>
+          <RouterLink v-if="garden" to="/garden">博客首页</RouterLink>
+          <RouterLink v-for="link in links" :key="link.to" :to="link.to">{{ link.label }}</RouterLink>
+        </template>
       </nav>
 
       <div class="header-actions">
@@ -138,42 +153,42 @@ function closePanels() {
 </template>
 
 <style scoped>
-.journal-header {
+.reading-header {
   --header-height: 70px;
-  background: rgb(248 248 242 / 96%);
-  border-bottom: 1px solid #d8ded3;
+  background: var(--shell-paper);
+  border-bottom: 1px solid var(--shell-line);
 }
 
-.journal-header.scrolled {
-  border-color: #ccd5c9;
+.reading-header.scrolled {
+  border-color: var(--shell-line);
   box-shadow: none;
 }
 
-.journal-header .header-inner,
-.journal-header .header-search-bar {
-  width: var(--journal-width);
+.reading-header .header-inner,
+.reading-header .header-search-bar {
+  width: var(--shell-width);
   max-width: none;
   padding-inline: 0;
 }
 
-.journal-header .header-inner {
+.reading-header .header-inner {
   gap: clamp(16px, 2vw, 32px);
 }
 
-.journal-header .brand {
+.reading-header .brand {
   gap: 9px;
   color: #213d32;
 }
 
-.journal-header .brand-mark {
+.reading-header .brand-mark {
   width: 32px;
   height: 34px;
   border-radius: 7px;
-  background: #294e40;
+  background: var(--shell-ink);
   color: #f4f4de;
 }
 
-.journal-header .brand-text {
+.reading-header .brand-text {
   display: inline;
   font: 600 25px/1 Georgia, 'Times New Roman', serif;
   letter-spacing: -1.2px;
@@ -189,119 +204,134 @@ function closePanels() {
   letter-spacing: .1em;
 }
 
-.journal-header .nav-links {
+.research-header .brand {
+  gap: 13px;
+  color: #202b35;
+}
+
+.research-slash {
+  color: #a4ada9;
+  font: 400 19px/1 Georgia, serif;
+}
+
+.research-label {
+  color: var(--shell-ink);
+  font: 400 18px/1 Georgia, 'Times New Roman', serif;
+}
+
+.reading-header .nav-links {
   flex: 0 1 auto;
   margin-left: auto;
   gap: clamp(10px, 1.5vw, 24px);
 }
 
-.journal-header .nav-links a {
+.reading-header .nav-links a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
   padding: 4px 1px;
-  color: #596459;
+  color: var(--shell-muted);
   font-size: 14px;
   font-weight: 500;
   letter-spacing: .045em;
 }
 
-.journal-header .nav-links a:is(:hover, .router-link-active) {
+.reading-header .nav-links a:is(:hover, .router-link-active) {
   background: transparent;
-  color: #294e40;
+  color: var(--shell-ink);
 }
 
-.journal-header .nav-links a.router-link-exact-active {
+.reading-header .nav-links a:is(.router-link-exact-active, [aria-current="location"]) {
   font-weight: 650;
 }
 
-.journal-header .nav-links a.router-link-exact-active::after {
+.reading-header .nav-links a:is(.router-link-exact-active, [aria-current="location"])::after {
   position: absolute;
   right: 1px;
   bottom: 2px;
   left: 1px;
   height: 2px;
-  background: #476c58;
+  background: var(--shell-ink);
   content: '';
 }
 
-.journal-header .header-actions {
+.reading-header .header-actions {
   gap: 4px;
   padding-left: 14px;
-  border-left: 1px solid #d2d9cd;
+  border-left: 1px solid var(--shell-line);
 }
 
-.journal-header .header-icon {
+.reading-header .header-icon {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  color: #294e40;
+  color: var(--shell-ink);
 }
 
-.journal-header .header-icon:hover {
+.reading-header .header-icon:hover {
   border-color: transparent;
-  background: #e8ede3;
+  background: var(--shell-hover);
 }
 
-.journal-header .header-search-bar {
+.reading-header .header-search-bar {
   padding-block: 13px;
-  border-color: #d8ded3;
+  border-color: var(--shell-line);
   background: transparent;
 }
 
-.journal-header .header-search-bar input {
+.reading-header .header-search-bar input {
   padding: 5px 7px;
 }
 
-.journal-header :is(a, button, input):focus-visible {
-  outline: 2px solid #476c58;
+.reading-header :is(a, button, input):focus-visible {
+  outline: 2px solid var(--shell-ink);
   outline-offset: 3px;
 }
 
 @media (max-width: 980px) {
-  .journal-header .header-actions {
+  .reading-header .header-actions {
     margin-left: auto;
     border: 0;
     padding: 0;
   }
 
-  .journal-header .header-icon {
+  .reading-header .header-icon {
     width: 44px;
     height: 44px;
   }
 
-  .journal-header .nav-links {
+  .reading-header .nav-links {
     position: absolute;
     top: 100%;
     justify-content: flex-start;
     align-items: stretch;
     gap: 4px;
-    padding: 10px var(--journal-gutter) 16px;
-    border-color: #d8ded3;
-    background: #f8f8f2;
+    padding: 10px var(--shell-gutter) 16px;
+    border-color: var(--shell-line);
+    background: var(--shell-paper);
   }
 
-  .journal-header .nav-links.open {
+  .reading-header .nav-links.open {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .journal-header .nav-links a {
+  .reading-header .nav-links a {
     justify-content: center;
     padding: 8px;
   }
 
-  .journal-header .nav-links a.router-link-exact-active {
-    background: #e6ece1;
+  .reading-header .nav-links a:is(.router-link-exact-active, [aria-current="location"]) {
+    background: var(--shell-hover);
   }
 
-  .journal-header .nav-links a.router-link-exact-active::after {
+  .reading-header .nav-links a:is(.router-link-exact-active, [aria-current="location"])::after {
     display: none;
   }
 }
 
 @media (max-width: 640px) {
-  .journal-header {
+  .reading-header {
     --header-height: 62px;
   }
 }
@@ -309,6 +339,22 @@ function closePanels() {
 @media (max-width: 420px) {
   .brand-note {
     display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .research-header .brand {
+    display: grid;
+    gap: 2px;
+  }
+
+  .research-slash {
+    display: none;
+  }
+
+  .research-label {
+    font-size: 13px;
+    letter-spacing: .03em;
   }
 }
 </style>
